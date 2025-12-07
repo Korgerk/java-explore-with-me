@@ -21,6 +21,16 @@ public class StatsService {
 
     @Transactional
     public void save(Hit hit) {
+        if (hit.getApp() == null || hit.getApp().isBlank()) {
+            throw new IllegalArgumentException("Field 'app' is required");
+        }
+        if (hit.getUri() == null || hit.getUri().isBlank()) {
+            throw new IllegalArgumentException("Field 'uri' is required");
+        }
+        if (hit.getIp() == null || hit.getIp().isBlank()) {
+            throw new IllegalArgumentException("Field 'ip' is required");
+        }
+
         EndpointHit entity = new EndpointHit();
         entity.setApp(hit.getApp());
         entity.setUri(hit.getUri());
