@@ -2,6 +2,9 @@ server:
   port: 9090
 
 spring:
+  jackson:
+    date-format: "yyyy-MM-dd HH:mm:ss"
+    time-zone: "UTC"
   application:
     name: stats-service
   datasource:

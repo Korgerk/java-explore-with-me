@@ -1,5 +1,6 @@
 package ru.practicum.stats.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
@@ -7,7 +8,6 @@ import ru.practicum.stats.Hit;
 import ru.practicum.stats.ViewStats;
 import ru.practicum.stats.service.StatsService;
 
-import jakarta.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.List;
 
