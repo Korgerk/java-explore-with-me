@@ -2,31 +2,22 @@ server:
   port: 9090
 
 spring:
-  jackson:
-    date-format: "yyyy-MM-dd HH:mm:ss"
-    time-zone: "UTC"
-
-  main:
-    banner-mode: off
-
-  jpa:
-    hibernate:
-      ddl-auto: create-drop
-    show-sql: true
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
-        jdbc.time_zone: UTC
-        format_sql: true
-
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://stats-db:5432/stats
     username: stats
     password: stats
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+  jackson:
+    date-format: "yyyy-MM-dd HH:mm:ss"
+    time-zone: UTC
 
-logging:
-  level:
-    org.hibernate.SQL: DEBUG
-    org.hibernate.orm.jdbc.bind: TRACE
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

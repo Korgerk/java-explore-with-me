@@ -53,29 +53,12 @@ public class StatsService {
         }
 
         if (unique) {
-            hits = hits.stream()
-                    .collect(Collectors.toMap(
-                            hit -> hit.getIp() + hit.getUri(),
-                            hit -> hit,
-                            (hit1, hit2) -> hit1,
-                            LinkedHashMap::new
-                    ))
-                    .values()
-                    .stream()
-                    .toList();
+            hits = hits.stream().collect(Collectors.toMap(hit -> hit.getIp() + hit.getUri(), hit -> hit, (hit1, hit2) -> hit1, LinkedHashMap::new)).values().stream().toList();
         }
 
-        return hits.stream()
-                .collect(Collectors.groupingBy(
-                        hit -> hit.getApp() + "|" + hit.getUri(),
-                        Collectors.counting()
-                ))
-                .entrySet()
-                .stream()
-                .map(entry -> {
-                    String[] parts = entry.getKey().split("\\|", 2);
-                    return new ViewStats(parts[0], parts[1], entry.getValue());
-                })
-                .collect(Collectors.toList());
+        return hits.stream().collect(Collectors.groupingBy(hit -> hit.getApp() + "|" + hit.getUri(), Collectors.counting())).entrySet().stream().map(entry -> {
+            String[] parts = entry.getKey().split("\\|", 2);
+            return new ViewStats(parts[0], parts[1], entry.getValue());
+        }).collect(Collectors.toList());
     }
 }
