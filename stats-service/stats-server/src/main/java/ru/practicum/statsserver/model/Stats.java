@@ -2,6 +2,7 @@ package ru.practicum.statsserver.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
 
@@ -13,20 +14,21 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Stats {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    Long id;
 
     @Column(name = "app", nullable = false, length = 255)
-    private String app;
+    String app;
 
     @Column(name = "uri", nullable = false, length = 512)
-    private String uri;
+    String uri;
 
     @Column(name = "ip", nullable = false, length = 45)
-    private String ip;
+    String ip;
 
     @Column(name = "timestamp", nullable = false)
-    private LocalDateTime timestamp;
+    LocalDateTime timestamp;
 }

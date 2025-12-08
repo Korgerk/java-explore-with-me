@@ -3,10 +3,8 @@ package ru.practicum.statsdto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
 
@@ -14,19 +12,20 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class EndpointHit {
-    private Long id;
+    Long id;
 
     @NotBlank(message = "App cannot be blank")
-    private String app;
+    String app;
 
     @NotBlank(message = "Uri cannot be blank")
-    private String uri;
+    String uri;
 
     @NotBlank(message = "Ip cannot be blank")
-    private String ip;
+    String ip;
 
     @NotNull(message = "Timestamp cannot be null")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime timestamp;
+    LocalDateTime timestamp;
 }
