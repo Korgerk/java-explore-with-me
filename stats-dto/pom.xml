@@ -9,7 +9,6 @@
         <groupId>ru.practicum</groupId>
         <artifactId>explore-with-me</artifactId>
         <version>0.0.1-SNAPSHOT</version>
-        <relativePath>../stats/pom.xml</relativePath>
     </parent>
 
     <artifactId>stats-dto</artifactId>
@@ -18,7 +17,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.30</version>
+            <version>${lombok.version}</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
