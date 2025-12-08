@@ -30,6 +30,7 @@ services:
       - SPRING_DATASOURCE_USERNAME=stats_user
       - SPRING_DATASOURCE_PASSWORD=stats_password
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - JAVA_OPTS=-Xmx512m -Xms256m
     depends_on:
       stats-db:
         condition: service_healthy

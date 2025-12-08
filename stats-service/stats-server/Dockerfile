@@ -1,5 +1,12 @@
-FROM openjdk:11-jre
+FROM eclipse-temurin:21-jre-jammy
+
 WORKDIR /app
-COPY target/*.jar app.jar
+
+VOLUME /tmp
+
+ARG JAR_FILE=target/*.jar
+COPY ${JAR_FILE} app.jar
+
 EXPOSE 9090
-ENTRYPOINT ["java", "-jar", "app.jar"]
+
+ENTRYPOINT ["sh", "-c", "java ${JAVA_OPTS} -jar app.jar"]
