@@ -25,7 +25,6 @@ public class AdminController {
     private final EventService eventService;
     private final CompilationService compilationService;
 
-    // Users
     @GetMapping("/users")
     public List<UserDto> getUsers(
             @RequestParam(required = false) List<Long> ids,
@@ -49,7 +48,6 @@ public class AdminController {
         userService.deleteUser(userId);
     }
 
-    // Categories
     @PostMapping("/categories")
     @ResponseStatus(HttpStatus.CREATED)
     public CategoryDto createCategory(@Valid @RequestBody CategoryDto categoryDto) {
@@ -71,7 +69,6 @@ public class AdminController {
         return categoryService.updateCategory(catId, categoryDto);
     }
 
-    // Events
     @GetMapping("/events")
     public List<EventFullDto> getEvents(
             @RequestParam(required = false) List<Long> users,
@@ -105,7 +102,6 @@ public class AdminController {
         return eventService.rejectEvent(eventId);
     }
 
-    // Compilations
     @PostMapping("/compilations")
     @ResponseStatus(HttpStatus.CREATED)
     public CompilationDto createCompilation(@Valid @RequestBody CompilationRequestDto compilationDto) {

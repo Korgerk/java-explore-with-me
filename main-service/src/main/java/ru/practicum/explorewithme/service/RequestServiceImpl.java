@@ -56,22 +56,18 @@ public class RequestServiceImpl implements RequestService {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("Event with id=" + eventId + " not found"));
 
-        // Проверка, что пользователь не является инициатором события
         if (event.getInitiator().getId().equals(userId)) {
             throw new ConflictException("Event initiator cannot create request for his own event");
         }
 
-        // Проверка, что событие опубликовано
         if (event.getState() != EventState.PUBLISHED) {
             throw new ConflictException("Cannot participate in unpublished event");
         }
 
-        // Проверка на повторный запрос
         if (requestRepository.existsByEventIdAndRequesterId(eventId, userId)) {
             throw new ConflictException("Request already exists for this event");
         }
 
-        // Проверка лимита участников
         Long confirmedRequests = requestRepository.countByEventIdAndStatus(eventId, RequestStatus.CONFIRMED);
         if (event.getParticipantLimit() != 0 && confirmedRequests >= event.getParticipantLimit()) {
             throw new ConflictException("Event participant limit reached");
@@ -84,7 +80,6 @@ public class RequestServiceImpl implements RequestService {
                 .status(RequestStatus.PENDING)
                 .build();
 
-        // Если премодерация отключена, автоматически подтверждаем
         if (!event.getRequestModeration() || event.getParticipantLimit() == 0) {
             request.setStatus(RequestStatus.CONFIRMED);
         }

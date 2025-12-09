@@ -18,7 +18,6 @@ public class PrivateController {
     private final EventService eventService;
     private final RequestService requestService;
 
-    // Events
     @GetMapping("/users/{userId}/events")
     public List<EventShortDto> getUserEvents(@PathVariable Long userId,
                                              @RequestParam(defaultValue = "0") Integer from,
@@ -50,7 +49,6 @@ public class PrivateController {
         return eventService.updateEventByUser(userId, eventId, updateRequest);
     }
 
-    // Requests
     @GetMapping("/users/{userId}/requests")
     public List<ParticipationRequestDto> getUserRequests(@PathVariable Long userId) {
         log.info("GET /users/{}/requests", userId);
@@ -72,7 +70,6 @@ public class PrivateController {
         return requestService.cancelRequest(userId, requestId);
     }
 
-    // Event requests
     @GetMapping("/users/{userId}/events/{eventId}/requests")
     public List<ParticipationRequestDto> getEventRequests(@PathVariable Long userId,
                                                           @PathVariable Long eventId) {

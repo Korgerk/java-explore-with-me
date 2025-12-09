@@ -1,11 +1,10 @@
-FROM eclipse-temurin:21-jre-jammy
+FROM eclipse-temurin:11-jre-jammy
 
 WORKDIR /app
 
 VOLUME /tmp
 
-ARG JAR_FILE=target/main-service-*.jar
-COPY ${JAR_FILE} app.jar
+COPY target/main-service-*.jar app.jar
 
 EXPOSE 8080
 

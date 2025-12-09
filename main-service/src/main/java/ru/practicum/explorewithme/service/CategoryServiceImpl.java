@@ -48,7 +48,6 @@ public class CategoryServiceImpl implements CategoryService {
                 .orElseThrow(() -> new NotFoundException("Category with id=" + catId + " not found"));
 
         long eventCount = eventRepository.count();
-        // Можно добавить проверку на наличие связанных событий
 
         categoryRepository.delete(category);
         log.info("Deleted category with id={}", catId);

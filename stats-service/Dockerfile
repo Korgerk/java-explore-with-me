@@ -4,9 +4,10 @@ WORKDIR /app
 
 VOLUME /tmp
 
-ARG JAR_PATH=stats-server/target/*.jar
-COPY ${JAR_PATH} app.jar
+RUN apt-get update && apt-get install -y netcat-openbsd && rm -rf /var/lib/apt/lists/*
+
+COPY stats-server/target/stats-server-*.jar app.jar
 
 EXPOSE 9090
 
-ENTRYPOINT ["sh", "-c", "java ${JAVA_OPTS} -jar app.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
