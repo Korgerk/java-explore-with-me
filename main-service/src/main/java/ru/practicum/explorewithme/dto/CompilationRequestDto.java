@@ -14,6 +14,8 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CompilationRequestDto {
     List<Long> events;
+
+    @Builder.Default
     Boolean pinned = false;
 
     @NotBlank

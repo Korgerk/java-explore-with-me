@@ -38,10 +38,13 @@ public class NewEventDto {
     @NotNull
     LocationDto location;
 
+    @Builder.Default
     Boolean paid = false;
 
     @PositiveOrZero
+    @Builder.Default
     Integer participantLimit = 0;
 
+    @Builder.Default
     Boolean requestModeration = true;
 }
