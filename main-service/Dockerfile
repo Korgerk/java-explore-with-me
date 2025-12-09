@@ -6,11 +6,11 @@ VOLUME /tmp
 
 EXPOSE 8080
 
-ARG JAR_FILE=target/main-service-*.jar
-COPY ${JAR_FILE} app.jar
+RUN apt-get update && apt-get install -y netcat-openbsd && rm -rf /var/lib/apt/lists/*
 
-ENTRYPOINT ["sh", "-c", "echo 'Waiting for main-db and stats-service...' && \
-  while ! nc -z main-db 5432; do sleep 1; done && \
-  while ! nc -z stats-service 9090; do sleep 1; done && \
-  echo 'All dependencies are ready, starting main-service...' && \
-  java ${JAVA_OPTS} -jar app.jar"]
+COPY target/main-service-*.jar app.jar
+
+COPY wait-for-it.sh /wait-for-it.sh
+RUN chmod +x /wait-for-it.sh
+
+ENTRYPOINT ["sh", "-c", "/wait-for-it.sh main-db 5432 -- echo 'DB ready' && /wait-for-it.sh stats-service 9090 -- echo 'Stats ready' && java -jar app.jar"]

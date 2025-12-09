@@ -30,7 +30,8 @@ services:
       SPRING_DATASOURCE_PASSWORD: 12345
     ports:
       - "9090:9090"
-      
+    # НИКАКОГО command ЗДЕСЬ!
+
   main-db:
     image: postgres:13-alpine
     container_name: main-db
