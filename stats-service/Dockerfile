@@ -4,8 +4,8 @@ WORKDIR /app
 
 VOLUME /tmp
 
-ARG JAR_FILE=target/*.jar
-COPY ${JAR_FILE} app.jar
+ARG JAR_PATH=stats-server/target/*.jar
+COPY ${JAR_PATH} app.jar
 
 EXPOSE 9090
 
