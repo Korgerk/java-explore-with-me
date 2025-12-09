@@ -1,45 +1,77 @@
+version: '3.8'
 services:
   stats-db:
-    image: postgres:14-alpine
+    image: postgres:13-alpine
     container_name: stats-db
-    ports:
-      - "5433:5432"
     environment:
-      POSTGRES_DB: stats_db
+      POSTGRES_DB: stats
       POSTGRES_USER: stats_user
       POSTGRES_PASSWORD: stats_password
+    ports:
+      - "6541:5432"
     volumes:
       - stats-db-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U stats_user"]
+      test: ["CMD-SHELL", "pg_isready -U stats_user -d stats"]
       interval: 10s
       timeout: 5s
       retries: 5
-    restart: unless-stopped
 
-  stats-server:
-    build:
-      context: ./stats-service/stats-server
-      dockerfile: Dockerfile
-    container_name: stats-server
-    ports:
-      - "9090:9090"
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://stats-db:5432/stats_db
-      SPRING_DATASOURCE_USERNAME: stats_user
-      SPRING_DATASOURCE_PASSWORD: stats_password
-      SPRING_JPA_HIBERNATE_DDL_AUTO: update
-      JAVA_OPTS: -Xmx512m -Xms256m
+  stats-service:
+    build: ./stats-service
+    container_name: stats-service
     depends_on:
       stats-db:
         condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://stats-db:5432/stats
+      SPRING_DATASOURCE_USERNAME: stats_user
+      SPRING_DATASOURCE_PASSWORD: stats_password
+    ports:
+      - "9090:9090"
+
+  main-db:
+    image: postgres:13-alpine
+    container_name: main-db
+    environment:
+      POSTGRES_DB: ewm
+      POSTGRES_USER: ewm_user
+      POSTGRES_PASSWORD: ewm_password
+    ports:
+      - "6542:5432"
+    volumes:
+      - main-db-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9090/actuator/health"]
+      test: ["CMD-SHELL", "pg_isready -U ewm_user -d ewm"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  main-service:
+    build: ./main-service
+    container_name: main-service
+    depends_on:
+      main-db:
+        condition: service_healthy
+      stats-service:
+        condition: service_started
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://main-db:5432/ewm
+      SPRING_DATASOURCE_USERNAME: ewm_user
+      SPRING_DATASOURCE_PASSWORD: ewm_password
+      STATS_SERVER_URL: http://stats-service:9090
+      # Увеличиваем таймауты для старта
+      SPRING_BOOT_WAIT_FOR_SERVICES_MAX_WAIT: 180
+    ports:
+      - "8080:8080"
+    # Добавляем healthcheck для основного сервиса
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 40s
-    restart: unless-stopped
 
 volumes:
   stats-db-data:
+  main-db-data:

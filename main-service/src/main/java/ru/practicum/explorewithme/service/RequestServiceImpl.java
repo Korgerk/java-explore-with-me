@@ -4,7 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.explorewithme.dto.*;
+import ru.practicum.explorewithme.dto.EventRequestStatusUpdateRequest;
+import ru.practicum.explorewithme.dto.EventRequestStatusUpdateResult;
+import ru.practicum.explorewithme.dto.ParticipationRequestDto;
 import ru.practicum.explorewithme.exception.ConflictException;
 import ru.practicum.explorewithme.exception.ForbiddenException;
 import ru.practicum.explorewithme.exception.NotFoundException;
@@ -17,6 +19,7 @@ import ru.practicum.explorewithme.model.enums.RequestStatus;
 import ru.practicum.explorewithme.repository.EventRepository;
 import ru.practicum.explorewithme.repository.RequestRepository;
 import ru.practicum.explorewithme.repository.UserRepository;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;

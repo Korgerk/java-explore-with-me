@@ -1,9 +1,8 @@
 package ru.practicum.explorewithme.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
+
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
@@ -12,15 +11,16 @@ import javax.validation.constraints.Size;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserDto {
-    private Long id;
+    Long id;
 
     @NotBlank
     @Size(min = 2, max = 250)
-    private String name;
+    String name;
 
     @NotBlank
     @Email
     @Size(min = 6, max = 254)
-    private String email;
+    String email;
 }

@@ -3,6 +3,7 @@ package ru.practicum.explorewithme.service;
 import ru.practicum.explorewithme.dto.CompilationDto;
 import ru.practicum.explorewithme.dto.CompilationRequestDto;
 import ru.practicum.explorewithme.dto.UpdateCompilationRequest;
+
 import java.util.List;
 
 public interface CompilationService {

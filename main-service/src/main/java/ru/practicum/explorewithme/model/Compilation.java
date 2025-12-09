@@ -1,6 +1,8 @@
 package ru.practicum.explorewithme.model;
 
 import lombok.*;
+import lombok.experimental.FieldDefaults;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -11,16 +13,17 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Compilation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    Long id;
 
     @Column(nullable = false, length = 50)
-    private String title;
+    String title;
 
     @Column(nullable = false)
-    private Boolean pinned;
+    Boolean pinned;
 
     @ManyToMany
     @JoinTable(
@@ -28,5 +31,5 @@ public class Compilation {
             joinColumns = @JoinColumn(name = "compilation_id"),
             inverseJoinColumns = @JoinColumn(name = "event_id")
     )
-    private List<Event> events;
+    List<Event> events;
 }

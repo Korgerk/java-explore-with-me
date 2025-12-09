@@ -10,6 +10,7 @@ import ru.practicum.explorewithme.service.CategoryService;
 import ru.practicum.explorewithme.service.CompilationService;
 import ru.practicum.explorewithme.service.EventService;
 import ru.practicum.explorewithme.service.UserService;
+
 import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.List;

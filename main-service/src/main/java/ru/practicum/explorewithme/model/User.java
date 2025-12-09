@@ -1,6 +1,8 @@
 package ru.practicum.explorewithme.model;
 
 import lombok.*;
+import lombok.experimental.FieldDefaults;
+
 import javax.persistence.*;
 
 @Entity
@@ -10,14 +12,15 @@ import javax.persistence.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    Long id;
 
     @Column(nullable = false, length = 250)
-    private String name;
+    String name;
 
     @Column(nullable = false, unique = true, length = 254)
-    private String email;
+    String email;
 }

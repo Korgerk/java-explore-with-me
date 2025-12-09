@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import ru.practicum.explorewithme.model.Event;
 import ru.practicum.explorewithme.model.enums.EventState;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;

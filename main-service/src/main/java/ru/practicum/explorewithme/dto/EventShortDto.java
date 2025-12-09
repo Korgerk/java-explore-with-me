@@ -1,27 +1,27 @@
 package ru.practicum.explorewithme.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
+
 import java.time.LocalDateTime;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class EventShortDto {
-    private Long id;
-    private String title;
-    private String annotation;
-    private CategoryDto category;
-    private UserDto initiator;
-    private Boolean paid;
+    Long id;
+    String title;
+    String annotation;
+    CategoryDto category;
+    UserDto initiator;
+    Boolean paid;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime eventDate;
+    LocalDateTime eventDate;
 
-    private Long confirmedRequests;
-    private Long views;
+    Long confirmedRequests;
+    Long views;
 }

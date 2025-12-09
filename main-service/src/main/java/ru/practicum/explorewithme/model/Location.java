@@ -1,6 +1,8 @@
 package ru.practicum.explorewithme.model;
 
 import lombok.*;
+import lombok.experimental.FieldDefaults;
+
 import javax.persistence.Embeddable;
 
 @Embeddable
@@ -9,7 +11,8 @@ import javax.persistence.Embeddable;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Location {
-    private Float lat;
-    private Float lon;
+    Float lat;
+    Float lon;
 }

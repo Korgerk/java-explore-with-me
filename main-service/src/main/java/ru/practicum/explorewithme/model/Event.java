@@ -1,7 +1,9 @@
 package ru.practicum.explorewithme.model;
 
 import lombok.*;
+import lombok.experimental.FieldDefaults;
 import ru.practicum.explorewithme.model.enums.EventState;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
@@ -12,56 +14,57 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    Long id;
 
     @Column(nullable = false, length = 120)
-    private String title;
+    String title;
 
     @Column(nullable = false, length = 2000)
-    private String annotation;
+    String annotation;
 
     @Column(length = 7000)
-    private String description;
+    String description;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)
-    private Category category;
+    Category category;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "initiator_id", nullable = false)
-    private User initiator;
+    User initiator;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private EventState state;
+    EventState state;
 
     @Column(name = "event_date", nullable = false)
-    private LocalDateTime eventDate;
+    LocalDateTime eventDate;
 
     @Column(name = "created_on", nullable = false)
-    private LocalDateTime createdOn;
+    LocalDateTime createdOn;
 
     @Column(name = "published_on")
-    private LocalDateTime publishedOn;
+    LocalDateTime publishedOn;
 
     @Embedded
-    private Location location;
+    Location location;
 
     @Column(nullable = false)
-    private Boolean paid;
+    Boolean paid;
 
     @Column(name = "participant_limit", nullable = false)
-    private Integer participantLimit;
+    Integer participantLimit;
 
     @Column(name = "request_moderation", nullable = false)
-    private Boolean requestModeration;
+    Boolean requestModeration;
 
     @Transient
-    private Long confirmedRequests;
+    Long confirmedRequests;
 
     @Transient
-    private Long views;
+    Long views;
 }

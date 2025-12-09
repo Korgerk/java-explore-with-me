@@ -2,7 +2,10 @@ package ru.practicum.explorewithme.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import ru.practicum.explorewithme.dto.*;
+import ru.practicum.explorewithme.dto.EventFullDto;
+import ru.practicum.explorewithme.dto.EventShortDto;
+import ru.practicum.explorewithme.dto.LocationDto;
+import ru.practicum.explorewithme.dto.NewEventDto;
 import ru.practicum.explorewithme.model.Event;
 import ru.practicum.explorewithme.model.Location;
 

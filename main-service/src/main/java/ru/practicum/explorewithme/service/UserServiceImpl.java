@@ -13,6 +13,7 @@ import ru.practicum.explorewithme.exception.ValidationException;
 import ru.practicum.explorewithme.mapper.UserMapper;
 import ru.practicum.explorewithme.model.User;
 import ru.practicum.explorewithme.repository.UserRepository;
+
 import java.util.List;
 import java.util.stream.Collectors;
 

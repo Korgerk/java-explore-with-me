@@ -16,6 +16,7 @@ import ru.practicum.explorewithme.model.Compilation;
 import ru.practicum.explorewithme.model.Event;
 import ru.practicum.explorewithme.repository.CompilationRepository;
 import ru.practicum.explorewithme.repository.EventRepository;
+
 import java.util.List;
 import java.util.stream.Collectors;
 

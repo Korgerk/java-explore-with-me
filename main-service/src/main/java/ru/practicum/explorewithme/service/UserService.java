@@ -1,6 +1,7 @@
 package ru.practicum.explorewithme.service;
 
 import ru.practicum.explorewithme.dto.UserDto;
+
 import java.util.List;
 
 public interface UserService {
