@@ -6,32 +6,31 @@ spring:
     banner-mode: off
 
   sql:
-    init:
-      mode: always
-      schema-locations: classpath:schema.sql
+    init.mode: always
 
   jpa:
-    hibernate:
-      ddl-auto: update
+    ddl-auto: validate
     show-sql: true
     database-platform: "org.hibernate.dialect.PostgreSQLDialect"
     properties:
       hibernate:
         dialect: "org.hibernate.dialect.PostgreSQLDialect"
+        jdbc.time_zone: UTC
         format_sql: true
 
   datasource:
     driver-class-name: "org.postgresql.Driver"
-    url: "jdbc:postgresql://stats-db:5432/stats"
+    url: "jdbc:postgresql://localhost:5433/stats"
     username: "stats_user"
     password: "12345"
-    hikari:
-      connection-timeout: 30000
-      maximum-pool-size: 10
 
 logging:
   level:
-    root: INFO
-    org.hibernate.SQL: DEBUG
-    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
-    org.springframework.web: DEBUG
+
+    org.hibernate:
+      SQL: DEBUG
+      orm.jdbc.bind: trace
+
+    org.springframework:
+      web: DEBUG
+      web.servlet.DispatcherServlet: DEBUG
