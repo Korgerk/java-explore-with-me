@@ -4,10 +4,14 @@ WORKDIR /app
 
 VOLUME /tmp
 
-RUN apt-get update && apt-get install -y netcat-openbsd && rm -rf /var/lib/apt/lists/*
-
-COPY stats-server/target/stats-server-*.jar app.jar
-
 EXPOSE 9090
 
-ENTRYPOINT ["java", "-jar", "app.jar"]
+RUN apt-get update && apt-get install -y netcat-openbsd && rm -rf /var/lib/apt/lists/*
+
+ARG JAR_FILE=target/*.jar
+COPY ${JAR_FILE} app.jar
+
+ENTRYPOINT ["sh", "-c", "echo 'Waiting for stats-db...' && \
+  while ! nc -z stats-db 5432; do sleep 1; done && \
+  echo 'Stats-db is ready, starting stats-service...' && \
+  java ${JAVA_OPTS} -jar app.jar"]

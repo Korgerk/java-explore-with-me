@@ -5,7 +5,7 @@ services:
     environment:
       POSTGRES_DB: stats
       POSTGRES_USER: stats_user
-      POSTGRES_PASSWORD: stats_password
+      POSTGRES_PASSWORD: 12345
     ports:
       - "6541:5432"
     volumes:
@@ -15,7 +15,6 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
-      start_period: 10s
 
   stats-service:
     build:
@@ -28,7 +27,7 @@ services:
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://stats-db:5432/stats
       SPRING_DATASOURCE_USERNAME: stats_user
-      SPRING_DATASOURCE_PASSWORD: stats_password
+      SPRING_DATASOURCE_PASSWORD: 12345
     ports:
       - "9090:9090"
 
@@ -38,7 +37,7 @@ services:
     environment:
       POSTGRES_DB: ewm
       POSTGRES_USER: ewm_user
-      POSTGRES_PASSWORD: ewm_password
+      POSTGRES_PASSWORD: 12345
     ports:
       - "6542:5432"
     volumes:
@@ -48,7 +47,6 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
-      start_period: 10s
 
   main-service:
     build:
@@ -63,7 +61,7 @@ services:
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://main-db:5432/ewm
       SPRING_DATASOURCE_USERNAME: ewm_user
-      SPRING_DATASOURCE_PASSWORD: ewm_password
+      SPRING_DATASOURCE_PASSWORD: 12345
       STATS_SERVER_URL: http://stats-service:9090
     ports:
       - "8080:8080"
