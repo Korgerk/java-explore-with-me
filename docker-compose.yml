@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   stats-db:
     image: postgres:14-alpine
@@ -17,18 +19,19 @@ services:
       retries: 5
     restart: unless-stopped
 
-  stats-server:
+  stats-service:
     build:
-      context: ./stats-service/stats-server
+      context: ./stats-service
       dockerfile: Dockerfile
-    container_name: stats-server
+    container_name: stats-service
     ports:
       - "9090:9090"
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://stats-db:5432/stats_db
       SPRING_DATASOURCE_USERNAME: stats_user
       SPRING_DATASOURCE_PASSWORD: stats_password
-      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_HIBERNATE_DDL_AUTO: validate
+      SERVER_PORT: 9090
       JAVA_OPTS: -Xmx512m -Xms256m
     depends_on:
       stats-db:
@@ -41,5 +44,72 @@ services:
       start_period: 40s
     restart: unless-stopped
 
+  main-db:
+    image: postgres:14-alpine
+    container_name: main-db
+    ports:
+      - "5434:5432"
+    environment:
+      POSTGRES_DB: main_db
+      POSTGRES_USER: main_user
+      POSTGRES_PASSWORD: main_password
+    volumes:
+      - main-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U main_user"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  main-service:
+    build:
+      context: ./main-service
+      dockerfile: Dockerfile
+    container_name: main-service
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://main-db:5432/main_db
+      SPRING_DATASOURCE_USERNAME: main_user
+      SPRING_DATASOURCE_PASSWORD: main_password
+      SPRING_JPA_HIBERNATE_DDL_AUTO: validate
+
+      STATS_SERVER_URL: http://stats-service:9090
+
+      SERVER_PORT: 8080
+      JAVA_OPTS: -Xmx512m -Xms256m
+
+      LOGGING_LEVEL_RU_PRACTICUM: INFO
+      LOGGING_LEVEL_ORG_HIBERNATE_SQL: WARN
+    depends_on:
+      main-db:
+        condition: service_healthy
+      stats-service:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    restart: unless-stopped
+    volumes:
+      - ./logs:/app/logs
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin
+    ports:
+      - "5050:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    restart: unless-stopped
+
 volumes:
   stats-db-data:
+  main-db-data:
+  pgadmin-data:
