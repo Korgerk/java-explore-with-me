@@ -7,9 +7,9 @@ spring:
 
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://ewm-db:5432/ewm
-    username: ewm_user
-    password: 12345
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/ewm}
+    username: ${SPRING_DATASOURCE_USERNAME:ewm_user}
+    password: ${SPRING_DATASOURCE_PASSWORD:12345}
 
   jpa:
     hibernate:
@@ -17,23 +17,6 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
-        format_sql: true
-    show-sql: true
 
 stats-server:
-  url: http://stats-server:9090
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info
-  endpoint:
-    health:
-      show-details: always
-
-logging:
-  level:
-    ru.practicum: DEBUG
-  pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  url: ${STATS_SERVER_URL:http://localhost:9090}
