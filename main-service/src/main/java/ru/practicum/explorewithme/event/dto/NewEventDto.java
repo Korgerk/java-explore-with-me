@@ -1,6 +1,8 @@
 package ru.practicum.explorewithme.event.dto;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import ru.practicum.explorewithme.event.Location;
 
 import javax.validation.constraints.NotBlank;
@@ -9,6 +11,8 @@ import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 
 @Data
+@Getter
+@Setter
 public class NewEventDto {
     @NotBlank
     @Size(min = 20, max = 2000)
