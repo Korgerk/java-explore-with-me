@@ -1,5 +1,6 @@
 package ru.practicum.explorewithme.event.model;
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import ru.practicum.explorewithme.category.model.Category;
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 @Table(name = "events", schema = "public")
 @Getter
 @Setter
+@Data
 public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

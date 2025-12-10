@@ -1,5 +1,6 @@
 package ru.practicum.explorewithme.category.model;
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,6 +12,7 @@ import javax.persistence.*;
 })
 @Getter
 @Setter
+@Data
 public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

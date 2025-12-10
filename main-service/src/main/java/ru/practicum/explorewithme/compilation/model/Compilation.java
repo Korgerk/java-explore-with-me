@@ -1,5 +1,6 @@
 package ru.practicum.explorewithme.compilation.model;
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import ru.practicum.explorewithme.event.model.Event;
@@ -12,6 +13,7 @@ import java.util.List;
 @Table(name = "compilations", schema = "public")
 @Getter
 @Setter
+@Data
 public class Compilation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
