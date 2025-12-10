@@ -7,8 +7,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import ru.practicum.mainserver.model.Category;
 
-import java.util.List;
-
 public interface CategoryRepository extends JpaRepository<Category, Long> {
     boolean existsByName(String name);
 

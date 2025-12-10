@@ -1,11 +1,10 @@
 package ru.practicum.mainserver.dto.user;
 
-import lombok.*;
-import lombok.experimental.FieldDefaults;
-
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 @Data
 @Builder

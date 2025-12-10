@@ -1,10 +1,10 @@
 package ru.practicum.mainserver.model;
 
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import java.util.Objects;
 
 @Entity

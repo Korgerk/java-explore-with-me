@@ -28,7 +28,6 @@ public class UserServiceImpl implements UserService {
     public User createUser(User user) {
         log.info("Создание пользователя: {}", user);
 
-        // Проверка уникальности email
         if (userRepository.existsByEmail(user.getEmail())) {
             throw new ConflictException("Пользователь с email=" + user.getEmail() + " уже существует");
         }
@@ -43,7 +42,6 @@ public class UserServiceImpl implements UserService {
     public void deleteUser(Long userId) {
         log.info("Удаление пользователя с id: {}", userId);
 
-        // Проверка существования пользователя
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Пользователь с id=" + userId + " не найден"));
 

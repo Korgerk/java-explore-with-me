@@ -1,13 +1,12 @@
 package ru.practicum.mainserver.model;
 
-import lombok.*;
-import lombok.experimental.FieldDefaults;
-
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 import ru.practicum.mainserver.dto.event.EventState;
 
 import java.time.LocalDateTime;

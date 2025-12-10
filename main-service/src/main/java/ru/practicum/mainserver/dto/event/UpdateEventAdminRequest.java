@@ -1,13 +1,13 @@
 package ru.practicum.mainserver.dto.event;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import ru.practicum.mainserver.dto.location.Location;
 
-import jakarta.validation.constraints.Future;
-import jakarta.validation.constraints.PositiveOrZero;
-import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
 
 @Data
@@ -37,7 +37,7 @@ public class UpdateEventAdminRequest {
 
     Boolean requestModeration;
 
-    String stateAction; // PUBLISH_EVENT или REJECT_EVENT
+    String stateAction;
 
     @Size(min = 3, max = 120, message = "Заголовок должен быть от 3 до 120 символов")
     String title;

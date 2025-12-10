@@ -9,7 +9,7 @@ spring:
 
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5434/ewm_db}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://ewm-db:5432/ewm_db}
     username: ${SPRING_DATASOURCE_USERNAME:ewm_user}
     password: ${SPRING_DATASOURCE_PASSWORD:ewm_password}
     hikari:
@@ -35,7 +35,7 @@ spring:
       schema-locations: classpath:schema.sql
 
 stats-service:
-  url: ${STATS_SERVICE_URL:http://localhost:9090}
+  url: ${STATS_SERVICE_URL:http://stats-server:9090}
 
 management:
   endpoints:

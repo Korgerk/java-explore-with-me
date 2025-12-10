@@ -4,7 +4,6 @@ import org.springframework.stereotype.Component;
 import ru.practicum.mainserver.dto.event.EventState;
 import ru.practicum.mainserver.dto.participation.ParticipationStatus;
 import ru.practicum.mainserver.model.Event;
-import ru.practicum.mainserver.model.ParticipationRequest;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -39,7 +38,6 @@ public class MapperUtil {
     }
 
     public List<Event> mapEventIdsToEvents(Set<Long> eventIds) {
-        // Этот метод будет реализован в сервисе
         return List.of();
     }
 

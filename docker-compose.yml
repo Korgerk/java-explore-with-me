@@ -1,7 +1,6 @@
 version: '3.8'
 
 services:
-  # База данных для сервиса статистики
   stats-db:
     image: postgres:14-alpine
     container_name: stats-db
@@ -20,7 +19,6 @@ services:
       retries: 5
     restart: unless-stopped
 
-  # Сервис статистики
   stats-server:
     build:
       context: ./stats-service/stats-server
@@ -38,14 +36,13 @@ services:
       stats-db:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9090/actuator/health"]
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://localhost:9090/actuator/health || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 40s
     restart: unless-stopped
 
-  # База данных для основного сервиса
   ewm-db:
     image: postgres:14-alpine
     container_name: ewm-db
@@ -64,7 +61,6 @@ services:
       retries: 5
     restart: unless-stopped
 
-  # Основной сервис
   main-service:
     build:
       context: ./main-service
@@ -85,7 +81,7 @@ services:
       stats-server:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://localhost:8080/actuator/health || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3

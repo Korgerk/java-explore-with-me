@@ -1,9 +1,9 @@
 package ru.practicum.mainserver.dto.participation;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import jakarta.validation.constraints.NotNull;
 import java.util.List;
 
 @Data
@@ -16,5 +16,5 @@ public class EventRequestStatusUpdateRequest {
     List<Long> requestIds;
 
     @NotNull(message = "Статус не может быть null")
-    String status; // CONFIRMED или REJECTED
+    String status;
 }

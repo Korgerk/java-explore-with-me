@@ -1,9 +1,8 @@
 package ru.practicum.mainserver.dto.location;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import jakarta.validation.constraints.NotNull;
 
 @Data
 @Builder

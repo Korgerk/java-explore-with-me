@@ -1,6 +1,7 @@
 package ru.practicum.mainserver.mapper;
 
-import org.mapstruct.*;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import ru.practicum.mainserver.dto.participation.ParticipationRequestDto;
 import ru.practicum.mainserver.model.ParticipationRequest;
 

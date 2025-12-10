@@ -61,6 +61,14 @@
             <version>${mapstruct.version}</version>
         </dependency>
 
+        <!-- Jakarta Servlet (ВАЖНО!) -->
+        <dependency>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <version>6.0.0</version>
+            <scope>provided</scope>
+        </dependency>
+
         <!-- Stats Client -->
         <dependency>
             <groupId>ru.practicum</groupId>

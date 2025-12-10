@@ -1,9 +1,8 @@
 package ru.practicum.mainserver.model;
 
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import jakarta.persistence.*;
 import ru.practicum.mainserver.dto.participation.ParticipationStatus;
 
 import java.time.LocalDateTime;

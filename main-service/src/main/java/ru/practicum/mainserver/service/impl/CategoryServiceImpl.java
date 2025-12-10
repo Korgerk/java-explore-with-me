@@ -33,7 +33,6 @@ public class CategoryServiceImpl implements CategoryService {
     public Category createCategory(Category category) {
         log.info("Создание категории: {}", category);
 
-        // Проверка на уникальность имени
         if (categoryRepository.existsByName(category.getName())) {
             throw new ConflictException("Категория с таким именем уже существует");
         }
@@ -48,11 +47,9 @@ public class CategoryServiceImpl implements CategoryService {
     public void deleteCategory(Long catId) {
         log.info("Удаление категории с id: {}", catId);
 
-        // Проверка существования категории
         Category category = categoryRepository.findById(catId)
                 .orElseThrow(() -> new NotFoundException("Категория с id=" + catId + " не найдена"));
 
-        // Проверка, что с категорией не связано событий
         if (eventRepository.existsByCategoryId(catId)) {
             throw new ConflictException("С категорией связаны события, удаление невозможно");
         }
@@ -66,18 +63,15 @@ public class CategoryServiceImpl implements CategoryService {
     public Category updateCategory(Long catId, CategoryDto categoryDto) {
         log.info("Обновление категории с id: {}, данные: {}", catId, categoryDto);
 
-        // Проверка существования категории
         Category category = categoryRepository.findById(catId)
                 .orElseThrow(() -> new NotFoundException("Категория с id=" + catId + " не найдена"));
 
-        // Проверка на уникальность имени (если имя изменилось)
         if (categoryDto.getName() != null &&
             !categoryDto.getName().equals(category.getName()) &&
             categoryRepository.existsByName(categoryDto.getName())) {
             throw new ConflictException("Категория с именем '" + categoryDto.getName() + "' уже существует");
         }
 
-        // Обновление полей
         categoryMapper.updateCategoryFromDto(categoryDto, category);
 
         Category updatedCategory = categoryRepository.save(category);

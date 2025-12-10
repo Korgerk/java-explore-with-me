@@ -1,13 +1,9 @@
 package ru.practicum.mainserver.service;
 
-import ru.practicum.mainserver.dto.event.EventFullDto;
-import ru.practicum.mainserver.dto.event.EventShortDto;
-import ru.practicum.mainserver.dto.event.NewEventDto;
-import ru.practicum.mainserver.dto.event.UpdateEventAdminRequest;
-import ru.practicum.mainserver.dto.event.UpdateEventUserRequest;
+import jakarta.servlet.http.HttpServletRequest;
+import ru.practicum.mainserver.dto.event.*;
 import ru.practicum.mainserver.model.Event;
 
-import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.List;
 

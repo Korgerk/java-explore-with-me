@@ -81,7 +81,7 @@ public interface EventMapper {
         }
 
         if (updateRequest.getLocation() != null) {
-            event.setLocation(null); // Нужен LocationMapper
+            event.setLocation(null);
         }
 
         if (updateRequest.getPaid() != null) {
@@ -119,7 +119,7 @@ public interface EventMapper {
         }
 
         if (updateRequest.getLocation() != null) {
-            event.setLocation(null); // Нужен LocationMapper
+            event.setLocation(null);
         }
 
         if (updateRequest.getPaid() != null) {

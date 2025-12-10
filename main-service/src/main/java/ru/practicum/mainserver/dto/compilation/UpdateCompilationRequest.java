@@ -1,9 +1,9 @@
 package ru.practicum.mainserver.dto.compilation;
 
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import jakarta.validation.constraints.Size;
 import java.util.List;
 
 @Data

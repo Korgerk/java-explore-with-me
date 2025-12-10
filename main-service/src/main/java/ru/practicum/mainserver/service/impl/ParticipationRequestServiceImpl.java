@@ -41,43 +41,35 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
     public ParticipationRequestDto createRequest(Long userId, Long eventId) {
         log.info("Создание запроса на участие пользователем id={} в событии id={}", userId, eventId);
 
-        // Проверка существования пользователя
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Пользователь с id=" + userId + " не найден"));
 
-        // Проверка существования события
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("Событие с id=" + eventId + " не найдено"));
 
-        // Проверка: инициатор события не может подать заявку на участие в своём событии
         if (event.getInitiator().getId().equals(userId)) {
             throw new ConflictException("Инициатор события не может подать заявку на участие в своём событии");
         }
 
-        // Проверка: нельзя участвовать в неопубликованном событии
         if (event.getState() != EventState.PUBLISHED) {
             throw new ConflictException("Нельзя участвовать в неопубликованном событии");
         }
 
-        // Проверка на повторный запрос
         if (requestRepository.existsByRequesterIdAndEventId(userId, eventId)) {
             throw new ConflictException("Запрос от пользователя id=" + userId + " на участие в событии id=" + eventId + " уже существует");
         }
 
-        // Проверка лимита участников
         if (event.getParticipantLimit() > 0 &&
             event.getConfirmedRequests() >= event.getParticipantLimit()) {
             throw new ConflictException("Достигнут лимит участников для события id=" + eventId);
         }
 
-        // Создание запроса
         ParticipationRequest request = ParticipationRequest.builder()
                 .event(event)
                 .requester(user)
                 .status(event.getRequestModeration() ? ParticipationStatus.PENDING : ParticipationStatus.CONFIRMED)
                 .build();
 
-        // Если запрос автоматически подтвержден, увеличиваем счетчик подтвержденных запросов
         if (!event.getRequestModeration()) {
             event.setConfirmedRequests(event.getConfirmedRequests() + 1);
             eventRepository.save(event);
@@ -93,7 +85,6 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
     public List<ParticipationRequestDto> getUserRequests(Long userId) {
         log.info("Получение запросов пользователя id={}", userId);
 
-        // Проверка существования пользователя
         if (!userRepository.existsById(userId)) {
             throw new NotFoundException("Пользователь с id=" + userId + " не найден");
         }
@@ -107,16 +98,13 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
     public ParticipationRequestDto cancelRequest(Long userId, Long requestId) {
         log.info("Отмена запроса id={} пользователем id={}", requestId, userId);
 
-        // Проверка существования запроса
         ParticipationRequest request = requestRepository.findById(requestId)
                 .orElseThrow(() -> new NotFoundException("Запрос с id=" + requestId + " не найден"));
 
-        // Проверка, что запрос принадлежит пользователю
         if (!request.getRequester().getId().equals(userId)) {
             throw new ConflictException("Запрос не принадлежит пользователю id=" + userId);
         }
 
-        // Отмена запроса
         request.setStatus(ParticipationStatus.CANCELED);
         ParticipationRequest canceledRequest = requestRepository.save(request);
         log.info("Запрос id={} отменен", requestId);
@@ -128,7 +116,6 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
     public List<ParticipationRequestDto> getEventParticipationRequests(Long userId, Long eventId) {
         log.info("Получение запросов на участие в событии id={} пользователя id={}", eventId, userId);
 
-        // Проверка существования события и что пользователь - его инициатор
         Event event = eventRepository.findByIdAndInitiatorId(eventId, userId)
                 .orElseThrow(() -> new NotFoundException("Событие с id=" + eventId + " у пользователя id=" + userId + " не найдено"));
 
@@ -143,38 +130,30 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
         log.info("Обновление статуса запросов для события id={} пользователем id={}: {}",
                 eventId, userId, updateRequest);
 
-        // Проверка существования события и что пользователь - его инициатор
         Event event = eventRepository.findByIdAndInitiatorId(eventId, userId)
                 .orElseThrow(() -> new NotFoundException("Событие с id=" + eventId + " у пользователя id=" + userId + " не найдено"));
 
-        // Если лимит участников равен 0 или отключена пре-модерация, подтверждение не требуется
         if (event.getParticipantLimit() == 0 || !event.getRequestModeration()) {
             throw new ValidationException("Для данного события подтверждение заявок не требуется");
         }
 
-        // Получение запросов
         List<ParticipationRequest> requests = requestRepository.findAllById(updateRequest.getRequestIds());
 
-        // Проверка, что все запросы принадлежат указанному событию
         for (ParticipationRequest request : requests) {
             if (!request.getEvent().getId().equals(eventId)) {
                 throw new ConflictException("Запрос id=" + request.getId() + " не принадлежит событию id=" + eventId);
             }
         }
 
-        // Обработка запросов
         List<ParticipationRequest> confirmedRequests = new ArrayList<>();
         List<ParticipationRequest> rejectedRequests = new ArrayList<>();
 
         for (ParticipationRequest request : requests) {
-            // Проверка, что запрос в состоянии ожидания
             if (request.getStatus() != ParticipationStatus.PENDING) {
                 throw new ConflictException("Статус можно изменить только у заявок в состоянии PENDING");
             }
 
-            // Обработка подтверждения
             if (updateRequest.getStatus().equals("CONFIRMED")) {
-                // Проверка лимита участников
                 if (event.getParticipantLimit() > 0 &&
                     event.getConfirmedRequests() >= event.getParticipantLimit()) {
                     throw new ConflictException("Достигнут лимит участников для события id=" + eventId);
@@ -184,10 +163,8 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
                 confirmedRequests.add(request);
                 event.setConfirmedRequests(event.getConfirmedRequests() + 1);
 
-                // Если при подтверждении лимит исчерпан, отклоняем все остальные
                 if (event.getParticipantLimit() > 0 &&
                     event.getConfirmedRequests() >= event.getParticipantLimit()) {
-                    // Отклоняем остальные запросы
                     rejectPendingRequests(eventId, updateRequest.getRequestIds());
                 }
             } else if (updateRequest.getStatus().equals("REJECTED")) {
@@ -196,7 +173,6 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
             }
         }
 
-        // Сохранение изменений
         eventRepository.save(event);
         requestRepository.saveAll(requests);
 

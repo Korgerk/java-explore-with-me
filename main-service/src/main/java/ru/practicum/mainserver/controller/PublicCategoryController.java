@@ -1,5 +1,7 @@
 package ru.practicum.mainserver.controller;
 
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
@@ -9,8 +11,6 @@ import ru.practicum.mainserver.mapper.CategoryMapper;
 import ru.practicum.mainserver.model.Category;
 import ru.practicum.mainserver.service.CategoryService;
 
-import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.PositiveOrZero;
 import java.util.List;
 import java.util.stream.Collectors;
 

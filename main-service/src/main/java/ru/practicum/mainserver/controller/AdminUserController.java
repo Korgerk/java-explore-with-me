@@ -1,5 +1,8 @@
 package ru.practicum.mainserver.controller;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -11,9 +14,6 @@ import ru.practicum.mainserver.mapper.UserMapper;
 import ru.practicum.mainserver.model.User;
 import ru.practicum.mainserver.service.UserService;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.PositiveOrZero;
 import java.util.List;
 import java.util.stream.Collectors;
 

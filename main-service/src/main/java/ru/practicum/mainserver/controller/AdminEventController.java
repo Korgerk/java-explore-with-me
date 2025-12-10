@@ -1,5 +1,8 @@
 package ru.practicum.mainserver.controller;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -9,9 +12,6 @@ import ru.practicum.mainserver.dto.event.EventFullDto;
 import ru.practicum.mainserver.dto.event.UpdateEventAdminRequest;
 import ru.practicum.mainserver.service.EventService;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.PositiveOrZero;
 import java.time.LocalDateTime;
 import java.util.List;
 

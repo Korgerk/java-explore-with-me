@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.mainserver.dto.compilation.CompilationDto;
 import ru.practicum.mainserver.dto.compilation.NewCompilationDto;
 import ru.practicum.mainserver.dto.compilation.UpdateCompilationRequest;
-import ru.practicum.mainserver.exception.ConflictException;
 import ru.practicum.mainserver.exception.NotFoundException;
 import ru.practicum.mainserver.exception.ValidationException;
 import ru.practicum.mainserver.mapper.CompilationMapper;
@@ -39,12 +38,10 @@ public class CompilationServiceImpl implements CompilationService {
     public CompilationDto createCompilation(NewCompilationDto newCompilationDto) {
         log.info("Создание подборки: {}", newCompilationDto);
 
-        // Получение событий для подборки
         Set<Event> events = new HashSet<>();
         if (newCompilationDto.getEvents() != null && !newCompilationDto.getEvents().isEmpty()) {
             events = new HashSet<>(eventRepository.findAllById(newCompilationDto.getEvents()));
 
-            // Проверка, что все события найдены
             if (events.size() != newCompilationDto.getEvents().size()) {
                 List<Long> foundIds = events.stream()
                         .map(Event::getId)
@@ -56,7 +53,6 @@ public class CompilationServiceImpl implements CompilationService {
             }
         }
 
-        // Создание подборки
         Compilation compilation = compilationMapper.toEntity(newCompilationDto);
         compilation.setEvents(events);
 
@@ -86,11 +82,9 @@ public class CompilationServiceImpl implements CompilationService {
         Compilation compilation = compilationRepository.findById(compId)
                 .orElseThrow(() -> new NotFoundException("Подборка с id=" + compId + " не найдена"));
 
-        // Обновление событий, если указаны
         if (updateRequest.getEvents() != null) {
             Set<Event> events = new HashSet<>(eventRepository.findAllById(updateRequest.getEvents()));
 
-            // Проверка, что все события найдены
             if (events.size() != updateRequest.getEvents().size()) {
                 List<Long> foundIds = events.stream()
                         .map(Event::getId)
@@ -104,7 +98,6 @@ public class CompilationServiceImpl implements CompilationService {
             compilation.setEvents(events);
         }
 
-        // Обновление полей
         compilationMapper.updateCompilationFromRequest(compilation, updateRequest);
 
         Compilation updatedCompilation = compilationRepository.save(compilation);

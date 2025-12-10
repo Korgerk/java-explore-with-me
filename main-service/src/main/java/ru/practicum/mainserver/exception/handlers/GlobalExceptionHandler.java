@@ -1,5 +1,6 @@
 package ru.practicum.mainserver.exception.handlers;
 
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -12,7 +13,6 @@ import ru.practicum.mainserver.exception.ConflictException;
 import ru.practicum.mainserver.exception.NotFoundException;
 import ru.practicum.mainserver.exception.ValidationException;
 
-import jakarta.validation.ConstraintViolationException;
 import java.time.LocalDateTime;
 import java.util.List;
 

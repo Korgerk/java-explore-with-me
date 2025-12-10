@@ -1,5 +1,6 @@
 package ru.practicum.mainserver.service.impl;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -20,8 +21,6 @@ import ru.practicum.mainserver.repository.CategoryRepository;
 import ru.practicum.mainserver.repository.EventRepository;
 import ru.practicum.mainserver.repository.UserRepository;
 import ru.practicum.mainserver.service.EventService;
-
-import jakarta.servlet.http.HttpServletRequest;
 import ru.practicum.statsdto.EndpointHit;
 
 import java.time.LocalDateTime;
@@ -48,20 +47,16 @@ public class EventServiceImpl implements EventService {
     public EventFullDto createEvent(Long userId, NewEventDto newEventDto) {
         log.info("Создание события пользователем id={}: {}", userId, newEventDto);
 
-        // Проверка существования пользователя
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Пользователь с id=" + userId + " не найден"));
 
-        // Проверка существования категории
         Category category = categoryRepository.findById(newEventDto.getCategory())
                 .orElseThrow(() -> new NotFoundException("Категория с id=" + newEventDto.getCategory() + " не найдена"));
 
-        // Проверка даты события (минимум 2 часа от текущего момента)
         if (newEventDto.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
             throw new ConflictException("Дата события должна быть не раньше, чем через 2 часа от текущего момента");
         }
 
-        // Создание события
         Event event = eventMapper.toEntity(newEventDto);
         event.setInitiator(user);
         event.setCategory(category);
@@ -78,7 +73,6 @@ public class EventServiceImpl implements EventService {
     public List<EventShortDto> getEventsByUser(Long userId, int from, int size) {
         log.info("Получение событий пользователя id={}, from={}, size={}", userId, from, size);
 
-        // Проверка существования пользователя
         if (!userRepository.existsById(userId)) {
             throw new NotFoundException("Пользователь с id=" + userId + " не найден");
         }
@@ -111,28 +105,23 @@ public class EventServiceImpl implements EventService {
         Event event = eventRepository.findByIdAndInitiatorId(eventId, userId)
                 .orElseThrow(() -> new NotFoundException("Событие с id=" + eventId + " у пользователя id=" + userId + " не найдено"));
 
-        // Проверка состояния события (можно редактировать только PENDING или CANCELED)
         if (event.getState() != EventState.PENDING && event.getState() != EventState.CANCELED) {
             throw new ConflictException("Редактировать можно только события в состоянии PENDING или CANCELED");
         }
 
-        // Проверка даты события (минимум 2 часа от текущего момента)
         if (updateRequest.getEventDate() != null &&
             updateRequest.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
             throw new ConflictException("Дата события должна быть не раньше, чем через 2 часа от текущего момента");
         }
 
-        // Обновление категории, если указана
         if (updateRequest.getCategory() != null) {
             Category category = categoryRepository.findById(updateRequest.getCategory())
                     .orElseThrow(() -> new NotFoundException("Категория с id=" + updateRequest.getCategory() + " не найдена"));
             event.setCategory(category);
         }
 
-        // Обновление полей
         eventMapper.updateEventFromUserRequest(updateRequest, event);
 
-        // Обработка stateAction
         if (updateRequest.getStateAction() != null) {
             StateActionUser stateAction = StateActionUser.valueOf(updateRequest.getStateAction());
             switch (stateAction) {
@@ -160,7 +149,6 @@ public class EventServiceImpl implements EventService {
 
         validatePaginationParams(from, size);
 
-        // Преобразование строк состояний в enum
         List<EventState> eventStates = null;
         if (states != null && !states.isEmpty()) {
             eventStates = states.stream()
@@ -187,23 +175,19 @@ public class EventServiceImpl implements EventService {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("Событие с id=" + eventId + " не найдено"));
 
-        // Проверка даты события для публикации (минимум 1 час от публикации)
         if (updateRequest.getEventDate() != null &&
             updateRequest.getEventDate().isBefore(event.getPublishedOn().plusHours(1))) {
             throw new ConflictException("Дата начала изменяемого события должна быть не ранее чем за час от даты публикации");
         }
 
-        // Обновление категории, если указана
         if (updateRequest.getCategory() != null) {
             Category category = categoryRepository.findById(updateRequest.getCategory())
                     .orElseThrow(() -> new NotFoundException("Категория с id=" + updateRequest.getCategory() + " не найдена"));
             event.setCategory(category);
         }
 
-        // Обновление полей
         eventMapper.updateEventFromAdminRequest(updateRequest, event);
 
-        // Обработка stateAction
         if (updateRequest.getStateAction() != null) {
             StateActionAdmin stateAction = StateActionAdmin.valueOf(updateRequest.getStateAction());
             switch (stateAction) {
@@ -240,17 +224,14 @@ public class EventServiceImpl implements EventService {
 
         validatePaginationParams(from, size);
 
-        // Установка диапазона дат по умолчанию
         if (rangeStart == null) {
             rangeStart = LocalDateTime.now();
         }
 
-        // Валидация диапазона дат
         if (rangeEnd != null && rangeStart.isAfter(rangeEnd)) {
             throw new ValidationException("Дата начала не может быть позже даты окончания");
         }
 
-        // Настройка сортировки
         Sort sorting = Sort.unsorted();
         if (sort != null) {
             switch (sort) {
@@ -269,7 +250,6 @@ public class EventServiceImpl implements EventService {
                 text, categories, paid, rangeStart, rangeEnd, onlyAvailable, pageable
         ).getContent();
 
-        // Сохранение статистики
         saveEndpointHit(request);
 
         return events.stream()
@@ -284,12 +264,10 @@ public class EventServiceImpl implements EventService {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("Событие с id=" + eventId + " не найдено"));
 
-        // Проверка, что событие опубликовано
         if (event.getState() != EventState.PUBLISHED) {
             throw new NotFoundException("Событие с id=" + eventId + " не опубликовано");
         }
 
-        // Сохранение статистики
         saveEndpointHit(request);
 
         return eventMapper.toFullDto(event);
