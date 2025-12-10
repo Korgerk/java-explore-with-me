@@ -1,8 +1,10 @@
 package ru.practicum.ewm.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+
 import javax.validation.constraints.PositiveOrZero;
 import javax.validation.constraints.Size;
+
 import lombok.*;
 import ru.practicum.ewm.model.EventStateAction;
 

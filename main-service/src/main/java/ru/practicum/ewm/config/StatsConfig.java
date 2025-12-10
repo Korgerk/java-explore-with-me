@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
-import ru.practicum.statsclient.StatsClient;
 
 @Configuration
 public class StatsConfig {
@@ -15,7 +14,7 @@ public class StatsConfig {
     }
 
     @Bean
-    public StatsClient statsClient(@Value("${stats-server.url}") String serverUrl) {
-        return new StatsClient(serverUrl);
+    public ru.practicum.statsclient.StatsClient statsClient(@Value("${stats-server.url}") String serverUrl) {
+        return new ru.practicum.statsclient.StatsClient(serverUrl);
     }
 }

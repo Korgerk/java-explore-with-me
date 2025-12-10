@@ -2,6 +2,7 @@ package ru.practicum.ewm.model;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+
 import lombok.*;
 
 @Getter

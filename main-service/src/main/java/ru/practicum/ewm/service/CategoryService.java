@@ -17,5 +17,4 @@ public interface CategoryService {
     List<CategoryDto> getCategories(Pageable pageable);
 
     CategoryDto getCategory(int catId);
-
 }

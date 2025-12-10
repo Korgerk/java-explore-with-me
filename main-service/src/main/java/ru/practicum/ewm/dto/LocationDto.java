@@ -1,6 +1,7 @@
 package ru.practicum.ewm.dto;
 
 import javax.validation.constraints.NotNull;
+
 import lombok.*;
 
 @Getter

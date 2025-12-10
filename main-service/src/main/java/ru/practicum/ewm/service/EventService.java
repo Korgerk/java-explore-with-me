@@ -1,15 +1,14 @@
 package ru.practicum.ewm.service;
 
 import org.springframework.data.domain.Pageable;
-import ru.practicum.ewm.dto.event.*;
-import ru.practicum.ewm.dto.participation.ParticipationRequestDto;
+import ru.practicum.ewm.dto.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 public interface EventService {
 
-    EventFullDto addEvent(long userId, NewEventDto newEventDto);
+    EventFullDto addEvent(long userId, EventCreateDto newEventDto);
 
     EventFullDto getEvent(long eventId, String uri, String ip);
 
@@ -40,7 +39,7 @@ public interface EventService {
             Pageable pageable
     );
 
-    EventFullDto updateEventByUser(long userId, long eventId, UpdateEventUserRequest updateEventUserRequest);
+    EventFullDto updateEventByUser(long userId, long eventId, EventUpdateUserDto updateEventUserDto);
 
-    EventFullDto updateEventByAdmin(long eventId, UpdateEventAdminRequest updateEventAdminRequest);
+    EventFullDto updateEventByAdmin(long eventId, EventUpdateAdminDto updateEventAdminDto);
 }

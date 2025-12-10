@@ -1,6 +1,7 @@
 package ru.practicum.ewm.service;
 
 import javax.validation.ValidationException;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
