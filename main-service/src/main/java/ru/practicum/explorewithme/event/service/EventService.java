@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.explorewithme.category.model.Category;
 import ru.practicum.explorewithme.category.repository.CategoryRepository;
-import ru.practicum.explorewithme.event.Location;
 import ru.practicum.explorewithme.event.dto.*;
 import ru.practicum.explorewithme.event.mapper.EventMapper;
 import ru.practicum.explorewithme.event.model.Event;
@@ -17,16 +16,18 @@ import ru.practicum.explorewithme.exception.NotFoundException;
 import ru.practicum.explorewithme.exception.ValidationException;
 import ru.practicum.explorewithme.request.model.RequestStatus;
 import ru.practicum.explorewithme.request.repository.RequestRepository;
-import ru.practicum.explorewithme.user.model.User;
-import ru.practicum.explorewithme.user.repository.UserRepository;
 import ru.practicum.explorewithme.statsclient.StatsClient;
 import ru.practicum.explorewithme.statsclient.dto.EndpointHitDto;
 import ru.practicum.explorewithme.statsclient.dto.ViewStatsDto;
+import ru.practicum.explorewithme.user.model.User;
+import ru.practicum.explorewithme.user.repository.UserRepository;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
