@@ -3,8 +3,6 @@ package ru.practicum.explorewithme.request.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.explorewithme.request.dto.EventRequestStatusUpdateRequest;
-import ru.practicum.explorewithme.request.dto.EventRequestStatusUpdateResult;
 import ru.practicum.explorewithme.request.dto.ParticipationRequestDto;
 import ru.practicum.explorewithme.request.service.RequestService;
 

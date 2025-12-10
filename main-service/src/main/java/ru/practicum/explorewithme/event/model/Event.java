@@ -3,8 +3,8 @@ package ru.practicum.explorewithme.event.model;
 import lombok.Getter;
 import lombok.Setter;
 import ru.practicum.explorewithme.category.model.Category;
-import ru.practicum.explorewithme.user.model.User;
 import ru.practicum.explorewithme.event.Location;
+import ru.practicum.explorewithme.user.model.User;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;

@@ -1,15 +1,12 @@
 package ru.practicum.explorewithme.event.mapper;
 
 import ru.practicum.explorewithme.category.mapper.CategoryMapper;
-import ru.practicum.explorewithme.event.Location;
 import ru.practicum.explorewithme.event.dto.*;
 import ru.practicum.explorewithme.event.model.Event;
-import ru.practicum.explorewithme.event.model.EventState;
 import ru.practicum.explorewithme.user.mapper.UserMapper;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.stream.Collectors;
 
 public class EventMapper {
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
