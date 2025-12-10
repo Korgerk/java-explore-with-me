@@ -17,6 +17,7 @@ import ru.practicum.ewm.repository.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -81,7 +82,7 @@ public class RequestServiceImpl implements RequestService {
         return requestRepository.findByRequesterId(userId)
                 .stream()
                 .map(requestMapper::toRequestDto)
-                .toList();
+                .sorted().collect(Collectors.toList());
     }
 
     @Override
@@ -116,7 +117,7 @@ public class RequestServiceImpl implements RequestService {
         return requestRepository.findByEventInitiatorIdAndEventId(userId, eventId)
                 .stream()
                 .map(requestMapper::toRequestDto)
-                .toList();
+                .sorted().collect(Collectors.toList());
     }
 
     @Override
@@ -152,9 +153,9 @@ public class RequestServiceImpl implements RequestService {
             event.setConfirmedRequests(event.getConfirmedRequests() + requests.size());
             eventRepository.save(event);
 
-            result.getConfirmedRequests().addAll(requests.stream().map(requestMapper::toRequestDto).toList());
+            result.getConfirmedRequests().addAll(requests.stream().map(requestMapper::toRequestDto).sorted().collect(Collectors.toList()));
         } else if (newStatus == RequestStatus.REJECTED) {
-            result.getRejectedRequests().addAll(requests.stream().map(requestMapper::toRequestDto).toList());
+            result.getRejectedRequests().addAll(requests.stream().map(requestMapper::toRequestDto).sorted().collect(Collectors.toList()));
         } else {
             throw new ConflictDataException(String.format("Указан неверный статус %s", newStatus));
         }

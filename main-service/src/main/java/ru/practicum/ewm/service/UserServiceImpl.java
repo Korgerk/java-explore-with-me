@@ -12,6 +12,7 @@ import ru.practicum.ewm.dto.UserDto;
 import ru.practicum.ewm.repository.UserRepository;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -44,12 +45,12 @@ public class UserServiceImpl implements UserService {
             return userRepository.findAll(pageable)
                     .stream()
                     .map(userMapper::toUserDto)
-                    .toList();
+                    .sorted().collect(Collectors.toList());
         }
 
         return userRepository.findAllByIdIn(ids, pageable)
                 .stream()
                 .map(userMapper::toUserDto)
-                .toList();
+                .sorted().collect(Collectors.toList());
     }
 }

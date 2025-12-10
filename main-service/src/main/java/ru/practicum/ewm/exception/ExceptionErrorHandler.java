@@ -14,6 +14,7 @@ import ru.practicum.ewm.dto.ErrorDto;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Slf4j
@@ -28,7 +29,7 @@ public class ExceptionErrorHandler {
                 .getFieldErrors()
                 .stream()
                 .map(error -> error.getField() + " " + error.getDefaultMessage())
-                .toList();
+                .sorted().collect(Collectors.toList());
 
         ErrorDto errorDto = ErrorDto.builder()
                 .errors(errors)
