@@ -1,22 +1,5 @@
 services:
-  stats-db:
-    image: postgres:14-alpine
-    container_name: stats-db
-    ports:
-      - "5433:5432"
-    environment:
-      POSTGRES_DB: stats_db
-      POSTGRES_USER: stats_user
-      POSTGRES_PASSWORD: stats_password
-    volumes:
-      - stats-db-data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U stats_user"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    restart: unless-stopped
-
+  # --- Сервис статистики ---
   stats-service:
     build:
       context: ./stats-service
@@ -33,26 +16,32 @@ services:
     depends_on:
       stats-db:
         condition: service_healthy
-    restart: unless-stopped
-
-  main-db:
-    image: postgres:14-alpine
-    container_name: main-db
-    ports:
-      - "5434:5432"
-    environment:
-      POSTGRES_DB: main_db
-      POSTGRES_USER: main_user
-      POSTGRES_PASSWORD: main_password
-    volumes:
-      - main-db-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U main_user"]
+      test: ["CMD", "curl", "-f", "http://localhost:9090/actuator/health"]
       interval: 10s
       timeout: 5s
       retries: 5
-    restart: unless-stopped
+      start_period: 30s
 
+  # --- База данных для сервиса статистики ---
+  stats-db:
+    image: postgres:14-alpine
+    container_name: stats-db
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: stats_db
+      POSTGRES_USER: stats_user
+      POSTGRES_PASSWORD: stats_password
+    volumes:
+      - stats-db-/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U stats_user -d stats_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # --- Основной сервис (main-service) ---
   main-service:
     build:
       context: ./main-service
@@ -71,24 +60,32 @@ services:
       main-db:
         condition: service_healthy
       stats-service:
-        condition: service_started
-    restart: unless-stopped
-    volumes:
-      - ./logs:/app/logs
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
 
-  pgadmin:
-    image: dpage/pgadmin4:latest
-    container_name: pgadmin
+  # --- База данных для основного сервиса ---
+  main-db:
+    image: postgres:14-alpine
+    container_name: main-db
     ports:
-      - "5050:80"
+      - "5432:5432"
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com
-      PGADMIN_DEFAULT_PASSWORD: admin
+      POSTGRES_DB: main_db
+      POSTGRES_USER: main_user
+      POSTGRES_PASSWORD: main_password
     volumes:
-      - pgadmin-data:/var/lib/pgadmin
-    restart: unless-stopped
+      - main-db-/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U main_user -d main_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
-  stats-db-data:
-  main-db-data:
-  pgadmin-data:
+  stats-db-
+  main-db-
