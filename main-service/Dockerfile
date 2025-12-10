@@ -2,11 +2,8 @@ FROM eclipse-temurin:21-jre-jammy
 
 WORKDIR /app
 
-VOLUME /tmp
+COPY target/main-service-0.0.1-SNAPSHOT.jar app.jar
 
 EXPOSE 8080
 
-ARG JAR_FILE=target/*.jar
-COPY ${JAR_FILE} app.jar
-
-ENTRYPOINT ["sh", "-c", "java ${JAVA_OPTS} -jar app.jar"]
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]
