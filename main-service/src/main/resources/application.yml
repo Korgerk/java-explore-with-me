@@ -3,28 +3,34 @@ server:
 
 spring:
   application:
-    name: main-service
-
+    name: ewm-main-service
   datasource:
-    url: jdbc:postgresql://main-db:5432/main_db
-    username: main_user
-    password: main_password
     driver-class-name: org.postgresql.Driver
-
+    url: jdbc:postgresql://localhost:5432/ewm_main_db
+    username: ${DB_USER:postgres}
+    password: ${DB_PASSWORD:postgres}
   jpa:
     hibernate:
       ddl-auto: validate
     show-sql: false
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
-        format_sql: false
-
-logging:
-  level:
-    ru.practicum.explorewithme: INFO
-  pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQL10Dialect
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    time-zone: UTC
+    date-format: "yyyy-MM-dd HH:mm:ss"
 
 stats-server:
-  url: http http://stats-service:9090
+  url: http://localhost:9090
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
