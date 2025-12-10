@@ -2,35 +2,45 @@ server:
   port: 9090
 
 spring:
-  application:
-    name: stats-server
+  main:
+    banner-mode: off
 
-  datasource:
-    driver-class-name: org.postgresql.Driver
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5433/stats_db}
-    username: ${SPRING_DATASOURCE_USERNAME:stats_user}
-    password: ${SPRING_DATASOURCE_PASSWORD:stats_password}
+  sql:
+    init.mode: always
 
   jpa:
-    hibernate:
-      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:update}
+    ddl-auto: validate
+    show-sql: true
+    database-platform: "org.hibernate.dialect.PostgreSQLDialect"
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
+        dialect: "org.hibernate.dialect.PostgreSQLDialect"
+        jdbc.time_zone: UTC
         format_sql: true
-    show-sql: true
 
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info
-  endpoint:
-    health:
-      show-details: always
+  datasource:
+    driver-class-name: "org.postgresql.Driver"
+    url: "jdbc:postgresql://localhost:5433/stats"
+    username: "stats_user"
+    password: "12345"
 
 logging:
   level:
-    ru.practicum: DEBUG
-  pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+    org.hibernate:
+      SQL: DEBUG
+      orm.jdbc.bind: trace
+
+    org.springframework:
+      web: DEBUG
+      web.servlet.DispatcherServlet: DEBUGDROP SEQUENCE IF EXISTS hit_seq;
+  DROP TABLE IF EXISTS hits;
+  
+  CREATE SEQUENCE IF NOT EXISTS hit_seq START 1 INCREMENT 1;
+  CREATE TABLE IF NOT EXISTS hits (
+  id INT8 PRIMARY KEY,
+  app VARCHAR(255) NOT NULL,
+  uri VARCHAR(255) NOT NULL,
+  ip VARCHAR(255) NOT NULL,
+  timestamp TIMESTAMP NOT NULL
+  );
