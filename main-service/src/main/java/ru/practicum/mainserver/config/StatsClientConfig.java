@@ -3,8 +3,10 @@ package ru.practicum.mainserver.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import ru.practicum.mainserver.client.StatsClient;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.web.client.RestTemplate;
 
+import java.ru.practicum.statsclient.StatsClient;
 
 @Configuration
 public class StatsClientConfig {
@@ -13,7 +15,15 @@ public class StatsClientConfig {
     private String statsServiceUrl;
 
     @Bean
-    public StatsClient statsClient() {
-        return new StatsClient(statsServiceUrl);
+    public RestTemplate statsRestTemplate() {
+        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+        factory.setConnectTimeout(2000);
+        factory.setReadTimeout(2000);
+        return new RestTemplate(factory);
+    }
+
+    @Bean
+    public StatsClient statsClient(RestTemplate statsRestTemplate) {
+        return new StatsClient(statsRestTemplate, statsServiceUrl);
     }
 }

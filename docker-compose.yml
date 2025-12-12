@@ -1,87 +1,56 @@
-version: '3.8'
-
 services:
-  # сервис статистики
+  stats-db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: stats
+      POSTGRES_USER: stats
+      POSTGRES_PASSWORD: stats
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U stats"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   stats-server:
     build: ./stats-service/stats-server
-    container_name: stats-server
-    ports:
-      - "9090:9090"
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/stats
-      - SPRING_DATASOURCE_USERNAME=stats_user
-      - SPRING_DATASOURCE_PASSWORD=12345
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
-    healthcheck:
-      test: [ "CMD-SHELL", "wget -q -O /dev/null http://localhost:9090/actuator/health || exit 1" ]
-      interval: 10s
-      timeout: 5s
-      retries: 10
+      SPRING_DATASOURCE_URL: jdbc:postgresql://stats-db:5432/stats
+      SPRING_DATASOURCE_USERNAME: stats
+      SPRING_DATASOURCE_PASSWORD: stats
     depends_on:
       stats-db:
         condition: service_healthy
-
-  # база сервиса статистики
-  stats-db:
-    image: postgres:16.1
-    container_name: stats-db
-    ports:
-      - "5433:5432"
-    environment:
-      - POSTGRES_DB=stats
-      - POSTGRES_USER=stats_user
-      - POSTGRES_PASSWORD=12345
-    volumes:
-      - stats-db-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -q -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
+      test: ["CMD-SHELL", "wget -qO- http://localhost:9090/actuator/health || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 5
+    ports:
+      - "9090:9090"
 
-  # основной сервис
+  main-db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: ewm
+      POSTGRES_USER: ewm
+      POSTGRES_PASSWORD: ewm
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ewm"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   ewm-service:
     build: ./main-service
-    container_name: ewm-service
-    ports:
-      - "8080:8080"
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://ewm-db:5432/ewm
-      - SPRING_DATASOURCE_USERNAME=ewm_user
-      - SPRING_DATASOURCE_PASSWORD=12345
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
-      - STATS_SERVICE_URL=http://stats-server:9090
-      - JAVA_OPTS=-Xmx512m -Xms256m
-    healthcheck:
-      test: [ "CMD-SHELL", "wget -q -O /dev/null http://localhost:8080/actuator/health || exit 1" ]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 60s
+      SPRING_DATASOURCE_URL: jdbc:postgresql://main-db:5432/ewm
+      SPRING_DATASOURCE_USERNAME: ewm
+      SPRING_DATASOURCE_PASSWORD: ewm
+      STATS_SERVER_URL: http://stats-server:9090
     depends_on:
-      ewm-db:
+      main-db:
         condition: service_healthy
       stats-server:
         condition: service_healthy
-
-  # база основного сервиса
-  ewm-db:
-    image: postgres:16.1
-    container_name: ewm-db
     ports:
-      - "5432:5432"
-    environment:
-      - POSTGRES_DB=ewm
-      - POSTGRES_USER=ewm_user
-      - POSTGRES_PASSWORD=12345
-    volumes:
-      - ewm-db-data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -q -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-volumes:
-  stats-db-data:
-  ewm-db-data:
+      - "8080:8080"
