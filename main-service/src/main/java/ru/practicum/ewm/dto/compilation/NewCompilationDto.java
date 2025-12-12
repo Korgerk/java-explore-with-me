@@ -1,0 +1,14 @@
+package ru.practicum.ewm.dto.compilation;
+
+import jakarta.validation.constraints.NotBlank;
+import lombok.Data;
+
+import java.util.List;
+
+@Data
+public class NewCompilationDto {
+    @NotBlank
+    private String title;
+    private boolean pinned;
+    private List<Long> events;
+}
