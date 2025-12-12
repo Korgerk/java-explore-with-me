@@ -4,9 +4,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.ewm.util.Constants;
-import ru.practicum.stats.dto.EndpointHitDto;
-import ru.practicum.stats.dto.ViewStatsDto;
-import ru.practicum.statsclient.StatsClient;
+import java.ru.practicum.statsclient.StatsClient;
+import ru.practicum.statsdto.EndpointHit;
+import ru.practicum.statsdto.ViewStats;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -20,7 +20,7 @@ public class StatsFacadeImpl implements StatsFacade {
 
     @Override
     public void hit(HttpServletRequest request) {
-        EndpointHitDto hit = new EndpointHitDto();
+        EndpointHit hit = new EndpointHit();
         hit.setApp(Constants.APP_NAME);
         hit.setUri(request.getRequestURI());
         hit.setIp(request.getRemoteAddr());
@@ -37,13 +37,14 @@ public class StatsFacadeImpl implements StatsFacade {
         LocalDateTime start = LocalDateTime.now().minusYears(10);
         LocalDateTime end = LocalDateTime.now().plusYears(1);
 
-        List<ViewStatsDto> stats = statsClient.getStats(start, end, uris, false);
+        List<ViewStats> stats = statsClient.getStats(start, end, uris, false);
+
         Map<String, Long> result = new HashMap<>();
         for (String uri : uris) {
             result.put(uri, 0L);
         }
         if (stats != null) {
-            for (ViewStatsDto dto : stats) {
+            for (ViewStats dto : stats) {
                 if (dto.getUri() != null) {
                     result.put(dto.getUri(), dto.getHits());
                 }
