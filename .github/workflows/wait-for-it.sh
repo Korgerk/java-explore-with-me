@@ -22,8 +22,6 @@ USAGE
     exit 1
 }
 
-export WAITFORIT_TIMEOUT=300
-
 wait_for()
 {
     if [[ $WAITFORIT_TIMEOUT -gt 0 ]]; then
