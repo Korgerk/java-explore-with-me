@@ -1,22 +1,24 @@
 services:
+  # БД сервиса статистики
   stats-db:
     image: postgres:14-alpine
     container_name: stats-db
     ports:
       - "5433:5432"
     environment:
-      POSTGRES_DB: stats_db
+      POSTGRES_DB: stats
       POSTGRES_USER: stats_user
-      POSTGRES_PASSWORD: stats_password
+      POSTGRES_PASSWORD: "12345"
     volumes:
       - stats-db-data:/var/lib/postgresql/data
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U stats_user" ]
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB -h 127.0.0.1"]
       interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 10
     restart: unless-stopped
 
+  # Сервис статистики
   stats-server:
     build:
       context: .
@@ -31,11 +33,32 @@ services:
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
       SERVER_ADDRESS: 0.0.0.0
       SERVER_PORT: 9090
+      JAVA_OPTS: -Xmx512m -Xms256m
     depends_on:
       stats-db:
         condition: service_healthy
     restart: unless-stopped
 
+  # БД основного сервиса
+  ewm-db:
+    image: postgres:14-alpine
+    container_name: ewm-db
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: ewm
+      POSTGRES_USER: ewm_user
+      POSTGRES_PASSWORD: "12345"
+    volumes:
+      - ewm-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB -h 127.0.0.1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  # Основной сервис
   ewm-service:
     build:
       context: .
@@ -58,23 +81,6 @@ services:
       stats-server:
         condition: service_started
     restart: unless-stopped
-
-  ewm-db:
-    image: postgres:14-alpine
-    container_name: ewm-db
-    ports:
-      - "5432:5432"
-    environment:
-      POSTGRES_DB: ewm
-      POSTGRES_USER: ewm_user
-      POSTGRES_PASSWORD: "12345"
-    volumes:
-      - ewm-db-data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB -h 127.0.0.1"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
 
 volumes:
   stats-db-data:
