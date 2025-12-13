@@ -1,4 +1,23 @@
 services:
+  stats-server:
+    build: ./stats-service/stats-server
+    container_name: stats-server
+    ports:
+      - "9090:9090"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/stats
+      - SPRING_DATASOURCE_USERNAME=stats_user
+      - SPRING_DATASOURCE_PASSWORD=12345
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:9090/actuator" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    depends_on:
+      stats-db:
+        condition: service_healthy
+
+  # база сервиса статистики
   stats-db:
     image: postgres:16.1
     container_name: stats-db
@@ -14,28 +33,25 @@ services:
       test: ["CMD-SHELL", "pg_isready -q -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
       interval: 10s
       timeout: 5s
-      retries: 10
+      retries: 5
 
-  stats-server:
-    build:
-      context: ./stats-service/stats-server
-    container_name: stats-server
+  # основной сервис
+  ewm-service:
+    build: ./main-service
+    container_name: ewm-service
     ports:
-      - "9090:9090"
+      - "8080:8080"
     environment:
-      - SERVER_PORT=9090
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/stats
-      - SPRING_DATASOURCE_USERNAME=stats_user
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://ewm-db:5432/ewm
+      - SPRING_DATASOURCE_USERNAME=ewm_user
       - SPRING_DATASOURCE_PASSWORD=12345
     depends_on:
-      stats-db:
+      ewm-db:
         condition: service_healthy
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9090/actuator/health"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
+      stats-server:
+        condition: service_healthy
 
+  # база основного сервиса
   ewm-db:
     image: postgres:16.1
     container_name: ewm-db
@@ -51,22 +67,4 @@ services:
       test: ["CMD-SHELL", "pg_isready -q -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
       interval: 10s
       timeout: 5s
-      retries: 10
-
-  ewm-service:
-    build:
-      context: ./main-service
-    container_name: ewm-service
-    ports:
-      - "8080:8080"
-    environment:
-      - SERVER_PORT=8080
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://ewm-db:5432/ewm
-      - SPRING_DATASOURCE_USERNAME=ewm_user
-      - SPRING_DATASOURCE_PASSWORD=12345
-      - STATS_SERVER_URL=http://stats-server:9090
-    depends_on:
-      ewm-db:
-        condition: service_healthy
-      stats-server:
-        condition: service_healthy
+      retries: 5
