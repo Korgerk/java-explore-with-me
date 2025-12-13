@@ -1,4 +1,5 @@
 services:
+  # сервис статистики
   stats-server:
     build: ./stats-service/stats-server
     container_name: stats-server
@@ -8,8 +9,12 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/stats
       - SPRING_DATASOURCE_USERNAME=stats_user
       - SPRING_DATASOURCE_PASSWORD=12345
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      # на всякий случай фиксируем биндинг и порт
+      - SERVER_ADDRESS=0.0.0.0
+      - SERVER_PORT=9090
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:9090/actuator" ]
+      test: [ "CMD-SHELL", "wget -q -O /dev/null http://localhost:9090/actuator/health || exit 1" ]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -28,7 +33,7 @@ services:
       - POSTGRES_USER=stats_user
       - POSTGRES_PASSWORD=12345
     volumes:
-      - ./volumes/stats_data:/var/lib/postgresql/data
+      - stats-db-data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -q -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
       interval: 10s
@@ -45,6 +50,18 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://ewm-db:5432/ewm
       - SPRING_DATASOURCE_USERNAME=ewm_user
       - SPRING_DATASOURCE_PASSWORD=12345
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - STATS_SERVICE_URL=http://stats-server:9090
+      # критично для того, чтобы порт пробросился наружу и wait-for-it увидел localhost:8080
+      - SERVER_ADDRESS=0.0.0.0
+      - SERVER_PORT=8080
+      - JAVA_OPTS=-Xmx512m -Xms256m
+    healthcheck:
+      test: [ "CMD-SHELL", "wget -q -O /dev/null http://localhost:8080/actuator/health || exit 1" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
     depends_on:
       ewm-db:
         condition: service_healthy
@@ -62,9 +79,13 @@ services:
       - POSTGRES_USER=ewm_user
       - POSTGRES_PASSWORD=12345
     volumes:
-      - ./volumes/ewm_data:/var/lib/postgresql/data
+      - ewm-db-data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -q -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
       interval: 10s
       timeout: 5s
       retries: 5
+
+volumes:
+  stats-db-data:
+  ewm-db-data:
