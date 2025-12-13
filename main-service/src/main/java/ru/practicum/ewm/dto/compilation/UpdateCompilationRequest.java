@@ -1,12 +1,20 @@
 package ru.practicum.ewm.dto.compilation;
 
-import lombok.Data;
+import jakarta.validation.constraints.Size;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 import java.util.List;
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class UpdateCompilationRequest {
-    private String title;
-    private Boolean pinned;
-    private List<Long> events;
+    List<Long> events;
+    Boolean pinned;
+
+    @Size(min = 1, max = 50, message = "Заголовок подборки должен быть от 1 до 50 символов")
+    String title;
 }

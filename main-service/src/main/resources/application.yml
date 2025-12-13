@@ -1,5 +1,5 @@
 server:
-  port: ${SERVER_PORT:8080}
+  port: 8080
 
 spring:
   application:
@@ -7,32 +7,45 @@ spring:
 
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/ewm}
-    username: ${SPRING_DATASOURCE_USERNAME:ewm}
-    password: ${SPRING_DATASOURCE_PASSWORD:ewm}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://ewm-db:5432/ewm}
+    username: ${SPRING_DATASOURCE_USERNAME:ewm_user}
+    password: ${SPRING_DATASOURCE_PASSWORD:12345}
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
 
   jpa:
     hibernate:
-      ddl-auto: none
-    open-in-view: false
+      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:update}
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
-    show-sql: true
+        jdbc:
+          batch_size: 20
+    show-sql: ${SPRING_JPA_SHOW_SQL:true}
 
   sql:
     init:
       mode: always
       schema-locations: classpath:schema.sql
 
-  jackson:
-    serialization:
-      write-dates-as-timestamps: false
-
 stats-server:
-  url: ${STATS_SERVER_URL:http://localhost:9090}
+  url: ${STATS_SERVICE_URL:http://stats-server:9090}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
 
 logging:
   level:
-    ru.practicum: INFO
+    ru.practicum: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"

@@ -1,27 +1,27 @@
 package ru.practicum.ewm.mapper;
 
-import org.springframework.stereotype.Component;
+import org.mapstruct.*;
 import ru.practicum.ewm.dto.user.NewUserRequest;
 import ru.practicum.ewm.dto.user.UserDto;
+import ru.practicum.ewm.dto.user.UserShortDto;
 import ru.practicum.ewm.model.User;
 
-@Component
-public class UserMapper {
+import java.util.List;
 
-    public UserDto toDto(User user) {
-        if (user == null) {
-            return null;
-        }
-        return new UserDto(user.getId(), user.getName(), user.getEmail());
-    }
+@Mapper(componentModel = "spring")
+public interface UserMapper {
 
-    public User toEntity(NewUserRequest request) {
-        if (request == null) {
-            return null;
-        }
-        User user = new User();
-        user.setName(request.getName());
-        user.setEmail(request.getEmail());
-        return user;
-    }
+    @Mapping(target = "id", ignore = true)
+    User toEntity(NewUserRequest newUserRequest);
+
+    User toEntity(UserDto userDto);
+
+    UserDto toDto(User user);
+
+    UserShortDto toShortDto(User user);
+
+    List<UserDto> toDtoList(List<User> users);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void updateUserFromDto(UserDto userDto, @MappingTarget User user);
 }

@@ -1,13 +1,19 @@
 package ru.practicum.ewm.dto.category;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class CategoryDto {
-    private Long id;
-    private String name;
+    Long id;
+
+    @NotBlank(message = "Название категории не может быть пустым")
+    @Size(min = 1, max = 50, message = "Название категории должно быть от 1 до 50 символов")
+    String name;
 }

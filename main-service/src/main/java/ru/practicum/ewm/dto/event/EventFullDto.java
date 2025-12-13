@@ -1,32 +1,58 @@
 package ru.practicum.ewm.dto.event;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 import ru.practicum.ewm.dto.category.CategoryDto;
-import ru.practicum.ewm.dto.user.UserDto;
+import ru.practicum.ewm.dto.location.Location;
+import ru.practicum.ewm.dto.user.UserShortDto;
 
 import java.time.LocalDateTime;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class EventFullDto {
-    private Long id;
-    private String title;
-    private String annotation;
-    private String description;
-    private CategoryDto category;
-    private UserDto initiator;
-    private LocalDateTime eventDate;
-    private LocalDateTime createdOn;
-    private LocalDateTime publishedOn;
-    private boolean paid;
-    private int participantLimit;
-    private boolean requestModeration;
-    private String state;
-    private double lat;
-    private double lon;
-    private long confirmedRequests;
-    private long views;
+    Long id;
+
+    @NotBlank(message = "Аннотация не может быть пустой")
+    @Size(min = 20, max = 2000, message = "Аннотация должна быть от 20 до 2000 символов")
+    String annotation;
+
+    CategoryDto category;
+
+    Integer confirmedRequests;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    LocalDateTime createdOn;
+
+    String description;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    LocalDateTime eventDate;
+
+    UserShortDto initiator;
+
+    Location location;
+
+    Boolean paid;
+
+    Integer participantLimit;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    LocalDateTime publishedOn;
+
+    Boolean requestModeration;
+
+    String state;
+
+    @NotBlank(message = "Заголовок не может быть пустым")
+    @Size(min = 3, max = 120, message = "Заголовок должен быть от 3 до 120 символов")
+    String title;
+
+    Long views;
 }

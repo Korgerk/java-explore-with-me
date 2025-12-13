@@ -1,26 +1,24 @@
 package ru.practicum.ewm.mapper;
 
-import org.springframework.stereotype.Component;
+import org.mapstruct.*;
 import ru.practicum.ewm.dto.category.CategoryDto;
 import ru.practicum.ewm.dto.category.NewCategoryDto;
 import ru.practicum.ewm.model.Category;
 
-@Component
-public class CategoryMapper {
+import java.util.List;
 
-    public CategoryDto toDto(Category category) {
-        if (category == null) {
-            return null;
-        }
-        return new CategoryDto(category.getId(), category.getName());
-    }
+@Mapper(componentModel = "spring")
+public interface CategoryMapper {
 
-    public Category toEntity(NewCategoryDto dto) {
-        if (dto == null) {
-            return null;
-        }
-        Category category = new Category();
-        category.setName(dto.getName());
-        return category;
-    }
+    @Mapping(target = "id", ignore = true)
+    Category toEntity(NewCategoryDto newCategoryDto);
+
+    Category toEntity(CategoryDto categoryDto);
+
+    CategoryDto toDto(Category category);
+
+    List<CategoryDto> toDtoList(List<Category> categories);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void updateCategoryFromDto(CategoryDto categoryDto, @MappingTarget Category category);
 }
