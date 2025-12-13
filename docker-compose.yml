@@ -9,13 +9,20 @@ services:
       POSTGRES_DB: stats
       POSTGRES_USER: stats_user
       POSTGRES_PASSWORD: "12345"
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=C"
     volumes:
       - stats-db-data:/var/lib/postgresql/data
+    command:
+      - "postgres"
+      - "-c"
+      - "fsync=off"
+      - "-c"
+      - "synchronous_commit=off"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB -h 127.0.0.1"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
+      test: [ "CMD-SHELL", "pg_isready -U $$POSTGRES_USER -h 127.0.0.1" ]
+      interval: 5s
+      timeout: 3s
+      retries: 5
     restart: unless-stopped
 
   # Сервис статистики
