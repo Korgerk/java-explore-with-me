@@ -49,6 +49,7 @@ public class StatsClient {
         return restClient.get()
                 .uri(uriComponentsBuilder.encode().toUriString())
                 .retrieve()
-                .body(new ParameterizedTypeReference<List<ViewStatsDto>>() {});
+                .body(new ParameterizedTypeReference<List<ViewStatsDto>>() {
+                });
     }
 }
