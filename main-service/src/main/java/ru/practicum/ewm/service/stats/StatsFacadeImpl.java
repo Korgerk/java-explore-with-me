@@ -4,7 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.ewm.util.Constants;
-import java.ru.practicum.statsclient.StatsClient;
+import ru.practicum.statsclient.StatsClient;
 import ru.practicum.statsdto.EndpointHit;
 import ru.practicum.statsdto.ViewStats;
 
