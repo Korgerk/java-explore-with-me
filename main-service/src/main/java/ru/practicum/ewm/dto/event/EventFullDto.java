@@ -1,28 +1,31 @@
 package ru.practicum.ewm.dto.event;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
+@FieldDefaults (level = AccessLevel.PRIVATE)
 public class EventFullDto {
 
-    private Long id;
-    private String title;
-    private String annotation;
-    private String description;
-    private Long category;
-    private LocalDateTime eventDate;
-    private LocationDto location;
-    private boolean paid;
-    private int participantLimit;
-    private boolean requestModeration;
-    private String state;
-    private Long confirmedRequests;
-    private Long views;
-    private LocalDateTime createdOn;
-    private LocalDateTime publishedOn;
-    private Long initiator;
+    Long id;
+    String title;
+    String annotation;
+    String description;
+    Long category;
+    LocalDateTime eventDate;
+    LocationDto location;
+    boolean paid;
+    int participantLimit;
+    boolean requestModeration;
+    String state;
+    Long confirmedRequests;
+    Long views;
+    LocalDateTime createdOn;
+    LocalDateTime publishedOn;
+    Long initiator;
 }
