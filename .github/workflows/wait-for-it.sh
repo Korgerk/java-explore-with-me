@@ -29,24 +29,28 @@ wait_for()
     else
         echoerr "$WAITFORIT_cmdname: waiting for $WAITFORIT_HOST:$WAITFORIT_PORT without a timeout"
     fi
+
     WAITFORIT_start_ts=$(date +%s)
+
     while :
     do
-        if [[ $WAITFORIT_ISBUSY -eq 1 ]]; then
-            nc -z $WAITFORIT_HOST $WAITFORIT_PORT
+        if command -v nc >/dev/null 2>&1; then
+            nc -z "$WAITFORIT_HOST" "$WAITFORIT_PORT" >/dev/null 2>&1
             WAITFORIT_result=$?
         else
-#            (echo -n > /dev/tcp/$WAITFORIT_HOST/$WAITFORIT_PORT) >/dev/null 2>&1
-            (curl --fail --silent $WAITFORIT_HOST:$WAITFORIT_PORT/actuator/health | grep UP) >/dev/null 2>&1
+            (echo -n >"/dev/tcp/$WAITFORIT_HOST/$WAITFORIT_PORT") >/dev/null 2>&1
             WAITFORIT_result=$?
         fi
+
         if [[ $WAITFORIT_result -eq 0 ]]; then
             WAITFORIT_end_ts=$(date +%s)
             echoerr "$WAITFORIT_cmdname: $WAITFORIT_HOST:$WAITFORIT_PORT is available after $((WAITFORIT_end_ts - WAITFORIT_start_ts)) seconds"
             break
         fi
+
         sleep 1
     done
+
     return $WAITFORIT_result
 }
 

@@ -1,12 +1,15 @@
 package ru.practicum.ewm.dto.compilation;
 
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.experimental.FieldDefaults;
 
 import java.util.List;
 
-@Data
+@Data@FieldDefaults(level = AccessLevel.PRIVATE)
+
 public class UpdateCompilationRequest {
-    private String title;
-    private Boolean pinned;
-    private List<Long> events;
+    String title;
+    Boolean pinned;
+    List<Long> events;
 }

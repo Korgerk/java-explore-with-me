@@ -1,22 +1,25 @@
 package ru.practicum.ewm.dto.event;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
 
 @Data
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class UpdateEventAdminRequest {
-    private String title;
-    private String annotation;
-    private String description;
-    private Long category;
+    String title;
+    String annotation;
+    String description;
+    Long category;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime eventDate;
+    LocalDateTime eventDate;
 
-    private Boolean paid;
-    private Integer participantLimit;
-    private Boolean requestModeration;
-    private String stateAction;
+    Boolean paid;
+    Integer participantLimit;
+    Boolean requestModeration;
+    String stateAction;
 }

@@ -1,17 +1,20 @@
 package ru.practicum.ewm.dto.error;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class ApiError {
-    private String status;
-    private String reason;
-    private String message;
-    private LocalDateTime timestamp;
+    String status;
+    String reason;
+    String message;
+    LocalDateTime timestamp;
 }
