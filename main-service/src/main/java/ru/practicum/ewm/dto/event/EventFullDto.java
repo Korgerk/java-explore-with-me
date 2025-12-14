@@ -20,14 +20,14 @@ public class EventFullDto {
     String title;
     String annotation;
     CategoryDto category;
-    boolean paid;
+    Boolean paid;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime eventDate;
 
     UserDto initiator;
     String description;
-    int participantLimit;
+    Integer participantLimit;
     String state;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
@@ -37,8 +37,8 @@ public class EventFullDto {
     LocalDateTime publishedOn;
 
     LocationDto location;
-    boolean requestModeration;
+    Boolean requestModeration;
 
-    long views;
-    long confirmedRequests;
+    Long confirmedRequests;
+    Long views;
 }

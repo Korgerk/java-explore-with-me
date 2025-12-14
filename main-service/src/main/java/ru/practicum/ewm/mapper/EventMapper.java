@@ -22,9 +22,7 @@ public class EventMapper {
     }
 
     public Event toEntity(NewEventDto dto, User initiator, Category category) {
-        if (dto == null) {
-            return null;
-        }
+        if (dto == null) return null;
 
         Event event = new Event();
         event.setTitle(dto.getTitle());
@@ -51,32 +49,27 @@ public class EventMapper {
     }
 
     public EventShortDto toShortDto(Event event, long confirmedRequests, long views) {
-        if (event == null) {
-            return null;
-        }
+        if (event == null) return null;
+
         return new EventShortDto(
                 event.getId(),
                 event.getTitle(),
                 event.getAnnotation(),
                 categoryMapper.toDto(event.getCategory()),
-                userMapper.toDto(event.getInitiator()),
-                event.getEventDate(),
                 event.isPaid(),
+                event.getEventDate(),
+                userMapper.toDto(event.getInitiator()),
                 confirmedRequests,
                 views
         );
     }
 
     public EventFullDto toFullDto(Event event, long confirmedRequests, long views) {
-        if (event == null) {
-            return null;
-        }
+        if (event == null) return null;
 
         LocationDto locationDto = null;
         if (event.getLocation() != null) {
-            locationDto = new LocationDto();
-            locationDto.setLat(event.getLocation().getLat());
-            locationDto.setLon(event.getLocation().getLon());
+            locationDto = new LocationDto(event.getLocation().getLat(), event.getLocation().getLon());
         }
 
         String state = event.getState() == null ? null : event.getState().name();
@@ -96,8 +89,8 @@ public class EventMapper {
                 event.getPublishedOn(),
                 locationDto,
                 event.isRequestModeration(),
-                views,
-                confirmedRequests
+                confirmedRequests,
+                views
         );
     }
 }

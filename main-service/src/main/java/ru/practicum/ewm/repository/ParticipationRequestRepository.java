@@ -20,7 +20,7 @@ public interface ParticipationRequestRepository extends JpaRepository<Participat
     long countByEventIdAndStatus(Long eventId, RequestStatus status);
 
     @Query("select r.event.id, count(r) from ParticipationRequest r " +
-            "where r.event.id in :eventIds and r.status = :status group by r.event.id")
+           "where r.event.id in :eventIds and r.status = :status group by r.event.id")
     List<Object[]> countByEventIdsAndStatusGrouped(
             @Param("eventIds") List<Long> eventIds,
             @Param("status") RequestStatus status

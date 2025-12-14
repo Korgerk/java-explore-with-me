@@ -6,7 +6,6 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.dto.compilation.CompilationDto;
 import ru.practicum.ewm.dto.compilation.NewCompilationDto;
 import ru.practicum.ewm.dto.compilation.UpdateCompilationRequest;
-import ru.practicum.ewm.dto.event.EventShortDto;
 import ru.practicum.ewm.exception.BadRequestException;
 import ru.practicum.ewm.exception.NotFoundException;
 import ru.practicum.ewm.mapper.CompilationMapper;
@@ -56,7 +55,7 @@ public class CompilationServiceImpl implements CompilationService {
 
         Compilation comp = new Compilation();
         comp.setTitle(dto.getTitle());
-        comp.setPinned(dto.getPinned() != null && dto.getPinned());
+        comp.setPinned(Boolean.TRUE.equals(dto.getPinned()));
 
         if (dto.getEvents() != null && !dto.getEvents().isEmpty()) {
             List<Event> events = eventRepository.findAllById(dto.getEvents());
