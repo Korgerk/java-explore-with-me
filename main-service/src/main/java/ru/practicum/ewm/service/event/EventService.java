@@ -20,7 +20,7 @@ public interface EventService {
 
     EventFullDto getPublicEventById(Long eventId, HttpServletRequest request);
 
-    List<EventFullDto> getUserEvents(Long userId, int from, int size);
+    List<EventShortDto> getUserEvents(Long userId, int from, int size);
 
     EventFullDto createEvent(Long userId, NewEventDto dto);
 

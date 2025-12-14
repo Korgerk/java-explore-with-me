@@ -131,31 +131,16 @@ public class EventServiceImpl implements EventService {
         }
 
         List<Long> ids = events.stream().map(Event::getId).toList();
+        Map<Long, Long> views = statsFacade.getViewsByEventIds(ids);
         Map<Long, Long> confirmed = getConfirmedCounts(ids);
 
         return events.stream()
                 .map(e -> eventMapper.toShortDto(
                         e,
                         confirmed.getOrDefault(e.getId(), 0L),
-                        0L
+                        views.getOrDefault(e.getId(), 0L)
                 ))
                 .collect(Collectors.toList());
-    }
-
-    @Override
-    public EventFullDto getUserEventById(Long userId, Long eventId) {
-        ensureUser(userId);
-
-        Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new NotFoundException("Event not found: " + eventId));
-
-        if (!event.getInitiator().getId().equals(userId)) {
-            throw new NotFoundException("Event not found: " + eventId);
-        }
-
-        long confirmed = requestRepository.countByEventIdAndStatus(eventId, RequestStatus.CONFIRMED);
-
-        return eventMapper.toFullDto(event, confirmed, 0L);
     }
 
     @Override
@@ -211,7 +196,9 @@ public class EventServiceImpl implements EventService {
 
         long confirmed = requestRepository.countByEventIdAndStatus(eventId, RequestStatus.CONFIRMED);
 
-        return eventMapper.toFullDto(saved, confirmed, 0L);
+        long views = statsFacade.getViewsByEventId(eventId);
+
+        return eventMapper.toFullDto(saved, confirmed, views);
     }
 
     @Override
@@ -243,13 +230,14 @@ public class EventServiceImpl implements EventService {
         }
 
         List<Long> ids = events.stream().map(Event::getId).toList();
+        Map<Long, Long> views = statsFacade.getViewsByEventIds(ids);
         Map<Long, Long> confirmed = getConfirmedCounts(ids);
 
         return events.stream()
                 .map(e -> eventMapper.toFullDto(
                         e,
                         confirmed.getOrDefault(e.getId(), 0L),
-                        0L
+                        views.getOrDefault(e.getId(), 0L)
                 ))
                 .collect(Collectors.toList());
     }
@@ -278,8 +266,9 @@ public class EventServiceImpl implements EventService {
         Event saved = eventRepository.save(event);
 
         long confirmed = requestRepository.countByEventIdAndStatus(eventId, RequestStatus.CONFIRMED);
+        long views = statsFacade.getViewsByEventId(eventId);
 
-        return eventMapper.toFullDto(saved, confirmed, 0L);
+        return eventMapper.toFullDto(saved, confirmed, views);
     }
 
     private void validateNewEvent(NewEventDto dto) {
