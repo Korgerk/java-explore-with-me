@@ -19,9 +19,7 @@ import ru.practicum.ewm.repository.ParticipationRequestRepository;
 import ru.practicum.ewm.service.stats.StatsFacade;
 import ru.practicum.ewm.util.PageRequestFactory;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,15 +36,15 @@ public class CompilationServiceImpl implements CompilationService {
 
     @Override
     public List<CompilationDto> getCompilations(Boolean pinned, int from, int size) {
-        List<Compilation> compilations = pinned == null
+        List<Compilation> comps = pinned == null
                 ? compilationRepository.findAll(PageRequestFactory.from(from, size)).getContent()
                 : compilationRepository.findByPinned(pinned, PageRequestFactory.from(from, size)).getContent();
 
-        if (compilations.isEmpty()) {
+        if (comps.isEmpty()) {
             return List.of();
         }
 
-        List<Long> eventIds = compilations.stream()
+        List<Long> eventIds = comps.stream()
                 .flatMap(c -> c.getEvents().stream())
                 .map(Event::getId)
                 .distinct()
@@ -55,62 +53,71 @@ public class CompilationServiceImpl implements CompilationService {
         Map<Long, Long> views = statsFacade.getViewsByEventIds(eventIds);
         Map<Long, Long> confirmed = getConfirmedCounts(eventIds);
 
-        return compilations.stream()
+        return comps.stream()
                 .map(c -> toDto(c, views, confirmed))
                 .toList();
     }
 
     @Override
     public CompilationDto getCompilationById(Long compId) {
-        Compilation compilation = compilationRepository.findById(compId)
+        Compilation comp = compilationRepository.findById(compId)
                 .orElseThrow(() -> new NotFoundException("Compilation not found: " + compId));
 
-        List<Long> eventIds = compilation.getEvents().stream()
-                .map(Event::getId)
-                .toList();
-
+        List<Long> eventIds = comp.getEvents().stream().map(Event::getId).toList();
         Map<Long, Long> views = statsFacade.getViewsByEventIds(eventIds);
         Map<Long, Long> confirmed = getConfirmedCounts(eventIds);
 
-        return toDto(compilation, views, confirmed);
+        return toDto(comp, views, confirmed);
     }
 
     @Override
     @Transactional
     public CompilationDto createCompilation(NewCompilationDto dto) {
-        Compilation compilation = new Compilation();
-        compilation.setTitle(dto.getTitle());
-        compilation.setPinned(dto.isPinned());
+        Compilation comp = new Compilation();
+        comp.setTitle(dto.getTitle());
+        comp.setPinned(Boolean.TRUE.equals(dto.getPinned()));
 
         if (dto.getEvents() != null && !dto.getEvents().isEmpty()) {
-            compilation.getEvents().addAll(eventRepository.findAllById(dto.getEvents()));
+            List<Event> events = eventRepository.findAllById(dto.getEvents());
+            comp.getEvents().addAll(events);
         }
 
-        Compilation saved = compilationRepository.save(compilation);
+        Compilation saved = compilationRepository.save(comp);
 
-        return toDto(saved, Map.of(), Map.of());
+        List<Long> eventIds = saved.getEvents().stream().map(Event::getId).toList();
+        Map<Long, Long> views = statsFacade.getViewsByEventIds(eventIds);
+        Map<Long, Long> confirmed = getConfirmedCounts(eventIds);
+
+        return toDto(saved, views, confirmed);
     }
 
     @Override
     @Transactional
     public CompilationDto updateCompilation(Long compId, UpdateCompilationRequest dto) {
-        Compilation compilation = compilationRepository.findById(compId)
+        Compilation comp = compilationRepository.findById(compId)
                 .orElseThrow(() -> new NotFoundException("Compilation not found: " + compId));
 
         if (dto.getTitle() != null) {
-            compilation.setTitle(dto.getTitle());
+            comp.setTitle(dto.getTitle());
         }
         if (dto.getPinned() != null) {
-            compilation.setPinned(dto.getPinned());
+            comp.setPinned(dto.getPinned());
         }
         if (dto.getEvents() != null) {
-            compilation.getEvents().clear();
-            compilation.getEvents().addAll(eventRepository.findAllById(dto.getEvents()));
+            comp.getEvents().clear();
+            if (!dto.getEvents().isEmpty()) {
+                List<Event> events = eventRepository.findAllById(dto.getEvents());
+                comp.getEvents().addAll(events);
+            }
         }
 
-        Compilation saved = compilationRepository.save(compilation);
+        Compilation saved = compilationRepository.save(comp);
 
-        return toDto(saved, Map.of(), Map.of());
+        List<Long> eventIds = saved.getEvents().stream().map(Event::getId).toList();
+        Map<Long, Long> views = statsFacade.getViewsByEventIds(eventIds);
+        Map<Long, Long> confirmed = getConfirmedCounts(eventIds);
+
+        return toDto(saved, views, confirmed);
     }
 
     @Override
@@ -122,38 +129,32 @@ public class CompilationServiceImpl implements CompilationService {
         compilationRepository.deleteById(compId);
     }
 
-    private CompilationDto toDto(Compilation compilation,
-                                 Map<Long, Long> views,
-                                 Map<Long, Long> confirmed) {
-
-        List<EventShortDto> events = compilation.getEvents().stream()
+    private CompilationDto toDto(Compilation comp, Map<Long, Long> views, Map<Long, Long> confirmed) {
+        List<Event> events = new ArrayList<>(comp.getEvents());
+        List<EventShortDto> shortDtos = events.stream()
                 .map(e -> eventMapper.toShortDto(
                         e,
                         confirmed.getOrDefault(e.getId(), 0L),
                         views.getOrDefault(e.getId(), 0L)
                 ))
                 .collect(Collectors.toList());
-
-        return compilationMapper.toDto(compilation, events);
+        return compilationMapper.toDto(comp, shortDtos);
     }
 
     private Map<Long, Long> getConfirmedCounts(List<Long> eventIds) {
         if (eventIds == null || eventIds.isEmpty()) {
-            return Map.of();
+            return Collections.emptyMap();
         }
-
         Map<Long, Long> result = new HashMap<>();
         for (Long id : eventIds) {
             result.put(id, 0L);
         }
-
-        List<Object[]> rows =
-                requestRepository.countByEventIdsAndStatusGrouped(eventIds, RequestStatus.CONFIRMED);
-
+        List<Object[]> rows = requestRepository.countByEventIdsAndStatusGrouped(eventIds, RequestStatus.CONFIRMED);
         for (Object[] row : rows) {
-            result.put((Long) row[0], (Long) row[1]);
+            Long eventId = (Long) row[0];
+            Long cnt = (Long) row[1];
+            result.put(eventId, cnt);
         }
-
         return result;
     }
 }

@@ -23,12 +23,15 @@ public class StatsFacadeImpl implements StatsFacade {
 
     @Override
     public void hit(HttpServletRequest request) {
-        EndpointHit hit = new EndpointHit();
-        hit.setApp(Constants.APP_NAME);
-        hit.setUri(request.getRequestURI());
-        hit.setIp(request.getRemoteAddr());
-        hit.setTimestamp(LocalDateTime.now());
-        statsClient.hit(hit);
+        try {
+            EndpointHit hit = new EndpointHit();
+            hit.setApp(Constants.APP_NAME);
+            hit.setUri(request.getRequestURI());
+            hit.setIp(request.getRemoteAddr());
+            hit.setTimestamp(LocalDateTime.now());
+            statsClient.hit(hit);
+        } catch (Throwable ignored) {
+        }
     }
 
     @Override
@@ -37,22 +40,26 @@ public class StatsFacadeImpl implements StatsFacade {
             return Collections.emptyMap();
         }
 
-        LocalDateTime start = LocalDateTime.now().minusYears(10);
-        LocalDateTime end = LocalDateTime.now().plusYears(1);
-
-        List<ViewStats> stats = statsClient.getStats(start, end, uris, false);
-
         Map<String, Long> result = new HashMap<>();
         for (String uri : uris) {
             result.put(uri, 0L);
         }
-        if (stats != null) {
-            for (ViewStats dto : stats) {
-                if (dto.getUri() != null) {
-                    result.put(dto.getUri(), dto.getHits());
+
+        try {
+            LocalDateTime start = LocalDateTime.now().minusYears(10);
+            LocalDateTime end = LocalDateTime.now().plusYears(1);
+
+            List<ViewStats> stats = statsClient.getStats(start, end, uris, false);
+            if (stats != null) {
+                for (ViewStats dto : stats) {
+                    if (dto.getUri() != null) {
+                        result.put(dto.getUri(), dto.getHits());
+                    }
                 }
             }
+        } catch (Throwable ignored) {
         }
+
         return result;
     }
 

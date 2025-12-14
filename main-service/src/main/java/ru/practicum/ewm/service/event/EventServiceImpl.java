@@ -319,6 +319,19 @@ public class EventServiceImpl implements EventService {
                              String stateAction,
                              boolean admin) {
 
+        if (participantLimit != null && participantLimit < 0) {
+            throw new BadRequestException("participantLimit must be >= 0");
+        }
+        if (annotation != null && annotation.isBlank()) {
+            throw new BadRequestException("annotation must not be blank");
+        }
+        if (description != null && description.isBlank()) {
+            throw new BadRequestException("description must not be blank");
+        }
+        if (title != null && title.isBlank()) {
+            throw new BadRequestException("title must not be blank");
+        }
+
         if (title != null) {
             event.setTitle(title);
         }
@@ -353,7 +366,7 @@ public class EventServiceImpl implements EventService {
                 try {
                     action = EventStateActionUser.valueOf(stateAction);
                 } catch (IllegalArgumentException ex) {
-                    throw new ConflictException("Unknown stateAction: " + stateAction);
+                    throw new BadRequestException("Unknown stateAction: " + stateAction);
                 }
 
                 if (action == EventStateActionUser.SEND_TO_REVIEW) {
@@ -366,16 +379,19 @@ public class EventServiceImpl implements EventService {
                 try {
                     action = EventStateActionAdmin.valueOf(stateAction);
                 } catch (IllegalArgumentException ex) {
-                    throw new ConflictException("Unknown stateAction: " + stateAction);
+                    throw new BadRequestException("Unknown stateAction: " + stateAction);
                 }
 
                 if (action == EventStateActionAdmin.PUBLISH_EVENT) {
                     if (event.getState() != EventState.PENDING) {
                         throw new ConflictException("Only PENDING event can be published");
                     }
-                    if (!event.getEventDate().isAfter(LocalDateTime.now().plusHours(1))) {
+
+                    LocalDateTime plannedDate = eventDate != null ? eventDate : event.getEventDate();
+                    if (plannedDate == null || !plannedDate.isAfter(LocalDateTime.now().plusHours(1))) {
                         throw new ConflictException("Event date must be at least 1 hour in the future to publish");
                     }
+
                     event.setState(EventState.PUBLISHED);
                     event.setPublishedOn(LocalDateTime.now());
                 } else if (action == EventStateActionAdmin.REJECT_EVENT) {

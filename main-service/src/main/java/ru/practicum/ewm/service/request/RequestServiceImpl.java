@@ -178,9 +178,7 @@ public class RequestServiceImpl implements RequestService {
                     pr.setStatus(RequestStatus.REJECTED);
                 }
                 requestRepository.saveAll(pending);
-                for (ParticipationRequest pr : pending) {
-                    rejectedList.add(pr);
-                }
+                rejectedList.addAll(pending);
             }
         }
 
