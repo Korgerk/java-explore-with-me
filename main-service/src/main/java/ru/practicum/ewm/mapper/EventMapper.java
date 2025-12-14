@@ -7,66 +7,94 @@ import ru.practicum.ewm.dto.event.LocationDto;
 import ru.practicum.ewm.dto.event.NewEventDto;
 import ru.practicum.ewm.model.Category;
 import ru.practicum.ewm.model.Event;
+import ru.practicum.ewm.model.Location;
 import ru.practicum.ewm.model.User;
 
 @Component
 public class EventMapper {
 
     public Event toEntity(NewEventDto dto, User initiator, Category category) {
+        if (dto == null) {
+            return null;
+        }
+
         Event event = new Event();
         event.setTitle(dto.getTitle());
         event.setAnnotation(dto.getAnnotation());
         event.setDescription(dto.getDescription());
-        event.setEventDate(dto.getEventDate());
-        event.setPaid(dto.isPaid());
-        event.setRequestModeration(dto.isRequestModeration());
-        event.setParticipantLimit(dto.getParticipantLimit());
         event.setInitiator(initiator);
         event.setCategory(category);
+        event.setEventDate(dto.getEventDate());
+        event.setPaid(dto.isPaid());
+        event.setParticipantLimit(dto.getParticipantLimit());
+        event.setRequestModeration(dto.isRequestModeration());
 
+        Location location = new Location();
         if (dto.getLocation() != null) {
-            event.setLat(dto.getLocation().getLat());
-            event.setLon(dto.getLocation().getLon());
+            location.setLat(dto.getLocation().getLat());
+            location.setLon(dto.getLocation().getLon());
         }
+        event.setLocation(location);
 
         return event;
     }
 
-    public EventFullDto toFullDto(Event event, long confirmed, long views) {
-        EventFullDto dto = new EventFullDto();
-        dto.setId(event.getId());
-        dto.setTitle(event.getTitle());
-        dto.setAnnotation(event.getAnnotation());
-        dto.setDescription(event.getDescription());
-        dto.setEventDate(event.getEventDate());
-        dto.setCreatedOn(event.getCreatedOn());
-        dto.setPublishedOn(event.getPublishedOn());
-        dto.setState(event.getState() == null ? null : event.getState().name());
-        dto.setPaid(event.isPaid());
-        dto.setParticipantLimit(event.getParticipantLimit());
-        dto.setRequestModeration(event.isRequestModeration());
-        dto.setCategory(event.getCategory() == null ? null : event.getCategory().getId());
-        dto.setInitiator(event.getInitiator() == null ? null : event.getInitiator().getId());
-        dto.setConfirmedRequests(confirmed);
-        dto.setViews(views);
+    public EventShortDto toShortDto(Event event, long confirmedRequests, long views) {
+        if (event == null) {
+            return null;
+        }
 
-        LocationDto location = new LocationDto(event.getLat(), event.getLon());
-        dto.setLocation(location);
+        Long categoryId = event.getCategory() == null ? null : event.getCategory().getId();
+        Long initiatorId = event.getInitiator() == null ? null : event.getInitiator().getId();
 
-        return dto;
+        return new EventShortDto(
+                event.getId(),
+                event.getTitle(),
+                event.getAnnotation(),
+                categoryId,
+                initiatorId,
+                event.isPaid(),
+                event.getEventDate(),
+                confirmedRequests,
+                views
+        );
     }
 
-    public EventShortDto toShortDto(Event event, long confirmed, long views) {
-        EventShortDto dto = new EventShortDto();
-        dto.setId(event.getId());
-        dto.setTitle(event.getTitle());
-        dto.setAnnotation(event.getAnnotation());
-        dto.setEventDate(event.getEventDate());
-        dto.setPaid(event.isPaid());
-        dto.setCategory(event.getCategory() == null ? null : event.getCategory().getId());
-        dto.setInitiator(event.getInitiator() == null ? null : event.getInitiator().getId());
-        dto.setConfirmedRequests(confirmed);
-        dto.setViews(views);
-        return dto;
+    public EventFullDto toFullDto(Event event, long confirmedRequests, long views) {
+        if (event == null) {
+            return null;
+        }
+
+        Long categoryId = event.getCategory() == null ? null : event.getCategory().getId();
+        Long initiatorId = event.getInitiator() == null ? null : event.getInitiator().getId();
+
+        LocationDto locationDto = null;
+        if (event.getLocation() != null) {
+            locationDto = new LocationDto(
+                    event.getLocation().getLat(),
+                    event.getLocation().getLon()
+            );
+        }
+
+        String state = event.getState() == null ? null : event.getState().name();
+
+        return new EventFullDto(
+                event.getId(),
+                event.getTitle(),
+                event.getAnnotation(),
+                event.getDescription(),
+                categoryId,
+                initiatorId,
+                event.isPaid(),
+                event.getParticipantLimit(),
+                event.isRequestModeration(),
+                event.getEventDate(),
+                event.getCreatedOn(),
+                event.getPublishedOn(),
+                state,
+                confirmedRequests,
+                views,
+                locationDto
+        );
     }
 }

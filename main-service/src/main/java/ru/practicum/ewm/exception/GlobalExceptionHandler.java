@@ -3,14 +3,13 @@ package ru.practicum.ewm.exception;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.practicum.ewm.dto.error.ApiError;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -18,6 +17,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ApiError> handleNotFound(NotFoundException ex) {
         ApiError error = new ApiError(
+                Collections.emptyList(),
                 HttpStatus.NOT_FOUND.name(),
                 "The required object was not found.",
                 ex.getMessage(),
@@ -29,6 +29,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ConflictException.class)
     public ResponseEntity<ApiError> handleConflict(ConflictException ex) {
         ApiError error = new ApiError(
+                Collections.emptyList(),
                 HttpStatus.CONFLICT.name(),
                 "For the requested operation the conditions are not met.",
                 ex.getMessage(),
@@ -37,15 +38,10 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.CONFLICT);
     }
 
-    @ExceptionHandler({
-            BadRequestException.class,
-            MethodArgumentNotValidException.class,
-            ConstraintViolationException.class,
-            MissingServletRequestParameterException.class,
-            HttpMessageNotReadableException.class
-    })
+    @ExceptionHandler({BadRequestException.class, MethodArgumentNotValidException.class, ConstraintViolationException.class})
     public ResponseEntity<ApiError> handleBadRequest(Exception ex) {
         ApiError error = new ApiError(
+                Collections.emptyList(),
                 HttpStatus.BAD_REQUEST.name(),
                 "Incorrectly made request.",
                 ex.getMessage(),
@@ -57,6 +53,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Throwable.class)
     public ResponseEntity<ApiError> handleOther(Throwable ex) {
         ApiError error = new ApiError(
+                Collections.emptyList(),
                 HttpStatus.INTERNAL_SERVER_ERROR.name(),
                 "Unexpected error.",
                 ex.getMessage(),
