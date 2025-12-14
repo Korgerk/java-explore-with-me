@@ -5,11 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.ewm.dto.event.EventFullDto;
-import ru.practicum.ewm.dto.event.EventShortDto;
-import ru.practicum.ewm.dto.event.NewEventDto;
-import ru.practicum.ewm.dto.event.UpdateEventAdminRequest;
-import ru.practicum.ewm.dto.event.UpdateEventUserRequest;
+import ru.practicum.ewm.dto.event.*;
 import ru.practicum.ewm.exception.BadRequestException;
 import ru.practicum.ewm.exception.ConflictException;
 import ru.practicum.ewm.exception.NotFoundException;
@@ -21,17 +17,12 @@ import ru.practicum.ewm.model.enums.EventState;
 import ru.practicum.ewm.model.enums.EventStateActionAdmin;
 import ru.practicum.ewm.model.enums.EventStateActionUser;
 import ru.practicum.ewm.model.enums.RequestStatus;
-import ru.practicum.ewm.repository.CategoryRepository;
-import ru.practicum.ewm.repository.EventRepository;
-import ru.practicum.ewm.repository.EventSpecifications;
-import ru.practicum.ewm.repository.ParticipationRequestRepository;
-import ru.practicum.ewm.repository.UserRepository;
+import ru.practicum.ewm.repository.*;
 import ru.practicum.ewm.service.stats.StatsFacade;
 import ru.practicum.ewm.util.PageRequestFactory;
 
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static org.springframework.data.jpa.domain.Specification.where;
 
@@ -322,6 +313,9 @@ public class EventServiceImpl implements EventService {
         }
 
         if (dto.getEventDate() != null) {
+            if (dto.getEventDate().isBefore(LocalDateTime.now())) {
+                throw new BadRequestException("Event date must be in the future");
+            }
             if (dto.getEventDate().isBefore(LocalDateTime.now().plusHours(1))) {
                 throw new ConflictException("Event date must be at least 1 hour in the future");
             }

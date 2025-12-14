@@ -1,10 +1,10 @@
 package ru.practicum.ewm.repository;
 
+import jakarta.persistence.criteria.Expression;
 import org.springframework.data.jpa.domain.Specification;
 import ru.practicum.ewm.model.Event;
 import ru.practicum.ewm.model.enums.EventState;
 
-import jakarta.persistence.criteria.Expression;
 import java.time.LocalDateTime;
 import java.util.List;
 

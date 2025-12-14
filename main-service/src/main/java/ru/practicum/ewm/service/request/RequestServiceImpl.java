@@ -83,16 +83,18 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public List<ParticipationRequestDto> getEventRequests(Long userId, Long eventId) {
+        ensureUser(userId);
+
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("Event not found: " + eventId));
 
         if (!event.getInitiator().getId().equals(userId)) {
-            throw new ConflictException("Only initiator can view requests for this event");
+            throw new NotFoundException("Event not found: " + eventId);
         }
 
         return requestRepository.findByEventId(eventId).stream()
                 .map(requestMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override

@@ -13,7 +13,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -68,11 +67,10 @@ public class StatsFacadeImpl implements StatsFacade {
         if (eventIds == null || eventIds.isEmpty()) {
             return Collections.emptyMap();
         }
-        List<String> uris = eventIds.stream()
-                .map(id -> "/events/" + id)
-                .collect(Collectors.toList());
 
+        List<String> uris = eventIds.stream().map(id -> "/events/" + id).toList();
         Map<String, Long> byUri = getViewsByUris(uris);
+
         Map<Long, Long> result = new HashMap<>();
         for (Long id : eventIds) {
             result.put(id, byUri.getOrDefault("/events/" + id, 0L));
@@ -82,19 +80,23 @@ public class StatsFacadeImpl implements StatsFacade {
 
     @Override
     public long getViewsByEventId(Long eventId) {
-        return getViewsByEventIds(List.of(eventId)).getOrDefault(eventId, 0L);
+        if (eventId == null) {
+            return 0L;
+        }
+        return getViewsByUris(List.of("/events/" + eventId)).getOrDefault("/events/" + eventId, 0L);
     }
 
     private String extractIp(HttpServletRequest request) {
         String xff = request.getHeader("X-Forwarded-For");
-        if (xff == null || xff.isBlank()) {
-            xff = request.getHeader("X-FORWARDED-FOR");
-        }
         if (xff != null && !xff.isBlank()) {
             String first = xff.split(",")[0].trim();
             if (!first.isBlank()) {
                 return first;
             }
+        }
+        String realIp = request.getHeader("X-Real-IP");
+        if (realIp != null && !realIp.isBlank()) {
+            return realIp.trim();
         }
         return request.getRemoteAddr();
     }
