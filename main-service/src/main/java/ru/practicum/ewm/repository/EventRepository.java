@@ -17,4 +17,6 @@ public interface EventRepository extends JpaRepository<Event, Long>, JpaSpecific
 
     @Query("select e from Event e where e.id = :id and e.state = :state")
     Optional<Event> findByIdAndState(@Param("id") Long id, @Param("state") EventState state);
+
+    boolean existsByCategoryId(Long categoryId);
 }

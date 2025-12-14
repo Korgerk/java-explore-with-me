@@ -11,6 +11,7 @@ import ru.practicum.ewm.exception.NotFoundException;
 import ru.practicum.ewm.mapper.CategoryMapper;
 import ru.practicum.ewm.model.Category;
 import ru.practicum.ewm.repository.CategoryRepository;
+import ru.practicum.ewm.repository.EventRepository;
 import ru.practicum.ewm.util.PageRequestFactory;
 
 import java.util.List;
@@ -21,6 +22,7 @@ import java.util.List;
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
+    private final EventRepository eventRepository;
     private final CategoryMapper categoryMapper;
 
     @Override
@@ -41,11 +43,13 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional
     public CategoryDto createCategory(NewCategoryDto dto) {
         if (dto.getName() == null || dto.getName().trim().isEmpty()) {
-            throw new BadRequestException("Category name must not be empty.");
+            throw new BadRequestException("Category name must not be empty");
         }
-        if (categoryRepository.findByNameIgnoreCase(dto.getName()).isPresent()) {
-            throw new ConflictException("Category name already exists: " + dto.getName());
-        }
+
+        categoryRepository.findByNameExactIgnoreCase(dto.getName())
+                .ifPresent(c -> {
+                    throw new ConflictException("Category name already exists: " + dto.getName());
+                });
 
         Category saved = categoryRepository.save(categoryMapper.toEntity(dto));
         return categoryMapper.toDto(saved);
@@ -55,13 +59,13 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional
     public CategoryDto updateCategory(Long catId, NewCategoryDto dto) {
         if (dto.getName() == null || dto.getName().trim().isEmpty()) {
-            throw new BadRequestException("Category name must not be empty.");
+            throw new BadRequestException("Category name must not be empty");
         }
 
         Category category = categoryRepository.findById(catId)
                 .orElseThrow(() -> new NotFoundException("Category not found: " + catId));
 
-        categoryRepository.findByNameIgnoreCase(dto.getName())
+        categoryRepository.findByNameExactIgnoreCase(dto.getName())
                 .filter(c -> !c.getId().equals(catId))
                 .ifPresent(c -> {
                     throw new ConflictException("Category name already exists: " + dto.getName());
@@ -77,6 +81,11 @@ public class CategoryServiceImpl implements CategoryService {
         if (!categoryRepository.existsById(catId)) {
             throw new NotFoundException("Category not found: " + catId);
         }
+
+        if (eventRepository.existsByCategoryId(catId)) {
+            throw new ConflictException("Category is not empty: " + catId);
+        }
+
         categoryRepository.deleteById(catId);
     }
 }

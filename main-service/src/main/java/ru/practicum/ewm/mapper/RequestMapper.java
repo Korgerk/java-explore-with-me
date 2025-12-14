@@ -15,7 +15,7 @@ public class RequestMapper {
                 request.getId(),
                 request.getEvent() == null ? null : request.getEvent().getId(),
                 request.getRequester() == null ? null : request.getRequester().getId(),
-                request.getStatus() == null ? null : request.getStatus(),
+                request.getStatus(),
                 request.getCreated()
         );
     }
