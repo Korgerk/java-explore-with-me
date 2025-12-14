@@ -52,6 +52,7 @@ public class EventServiceImpl implements EventService {
                                                int from,
                                                int size,
                                                HttpServletRequest request) {
+
         statsFacade.hit(request);
 
         LocalDateTime start = rangeStart == null ? LocalDateTime.now() : rangeStart;
@@ -119,7 +120,10 @@ public class EventServiceImpl implements EventService {
     public List<EventFullDto> getUserEvents(Long userId, int from, int size) {
         ensureUser(userId);
 
-        List<Event> events = eventRepository.findByInitiatorId(userId, PageRequestFactory.from(from, size, Sort.by("id").ascending()))
+        List<Event> events = eventRepository.findByInitiatorId(
+                        userId,
+                        PageRequestFactory.from(from, size, Sort.by("id").ascending())
+                )
                 .getContent();
 
         if (events.isEmpty()) {
@@ -145,10 +149,9 @@ public class EventServiceImpl implements EventService {
         User initiator = ensureUser(userId);
         Category category = ensureCategory(dto.getCategory());
 
+        validateNewEvent(dto);
+
         LocalDateTime now = LocalDateTime.now();
-        if (dto.getEventDate() == null || !dto.getEventDate().isAfter(now.plusHours(2))) {
-            throw new ConflictException("Event date must be at least 2 hours in the future");
-        }
 
         Event event = eventMapper.toEntity(dto, initiator, category);
         event.setCreatedOn(now);
@@ -174,9 +177,20 @@ public class EventServiceImpl implements EventService {
             throw new ConflictException("Published event cannot be changed");
         }
 
-        applyUpdate(event, dto.getTitle(), dto.getAnnotation(), dto.getDescription(), dto.getCategory(),
-                dto.getEventDate(), dto.getPaid(), dto.getParticipantLimit(), dto.getRequestModeration(),
-                dto.getStateAction(), false);
+        validateUpdate(dto.getTitle(), dto.getAnnotation(), dto.getDescription(), dto.getParticipantLimit());
+
+        applyUpdate(event,
+                dto.getTitle(),
+                dto.getAnnotation(),
+                dto.getDescription(),
+                dto.getCategory(),
+                dto.getEventDate(),
+                dto.getPaid(),
+                dto.getParticipantLimit(),
+                dto.getRequestModeration(),
+                dto.getStateAction(),
+                false
+        );
 
         Event saved = eventRepository.save(event);
 
@@ -194,6 +208,7 @@ public class EventServiceImpl implements EventService {
                                              LocalDateTime rangeEnd,
                                              int from,
                                              int size) {
+
         if (rangeStart != null && rangeEnd != null && rangeEnd.isBefore(rangeStart)) {
             throw new BadRequestException("rangeEnd must not be before rangeStart");
         }
@@ -203,7 +218,10 @@ public class EventServiceImpl implements EventService {
                 .and(withCategories(categories))
                 .and(withRange(rangeStart, rangeEnd));
 
-        List<Event> events = eventRepository.findAll(spec, PageRequestFactory.from(from, size, Sort.by("id").ascending()))
+        List<Event> events = eventRepository.findAll(
+                        spec,
+                        PageRequestFactory.from(from, size, Sort.by("id").ascending())
+                )
                 .getContent();
 
         if (events.isEmpty()) {
@@ -229,9 +247,20 @@ public class EventServiceImpl implements EventService {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("Event not found: " + eventId));
 
-        applyUpdate(event, dto.getTitle(), dto.getAnnotation(), dto.getDescription(), dto.getCategory(),
-                dto.getEventDate(), dto.getPaid(), dto.getParticipantLimit(), dto.getRequestModeration(),
-                dto.getStateAction(), true);
+        validateUpdate(dto.getTitle(), dto.getAnnotation(), dto.getDescription(), dto.getParticipantLimit());
+
+        applyUpdate(event,
+                dto.getTitle(),
+                dto.getAnnotation(),
+                dto.getDescription(),
+                dto.getCategory(),
+                dto.getEventDate(),
+                dto.getPaid(),
+                dto.getParticipantLimit(),
+                dto.getRequestModeration(),
+                dto.getStateAction(),
+                true
+        );
 
         Event saved = eventRepository.save(event);
 
@@ -239,6 +268,42 @@ public class EventServiceImpl implements EventService {
         long views = statsFacade.getViewsByEventId(eventId);
 
         return eventMapper.toFullDto(saved, confirmed, views);
+    }
+
+    private void validateNewEvent(NewEventDto dto) {
+        if (dto.getTitle() == null || dto.getTitle().isBlank()) {
+            throw new BadRequestException("title must not be blank");
+        }
+        if (dto.getAnnotation() == null || dto.getAnnotation().isBlank()) {
+            throw new BadRequestException("annotation must not be blank");
+        }
+        if (dto.getDescription() == null || dto.getDescription().isBlank()) {
+            throw new BadRequestException("description must not be blank");
+        }
+        if (dto.getEventDate() == null) {
+            throw new BadRequestException("eventDate must not be null");
+        }
+        if (!dto.getEventDate().isAfter(LocalDateTime.now().plusHours(2))) {
+            throw new ConflictException("Event date must be at least 2 hours in the future");
+        }
+        if (dto.getParticipantLimit() < 0) {
+            throw new BadRequestException("participantLimit must not be negative");
+        }
+    }
+
+    private void validateUpdate(String title, String annotation, String description, Integer participantLimit) {
+        if (title != null && title.isBlank()) {
+            throw new BadRequestException("title must not be blank");
+        }
+        if (annotation != null && annotation.isBlank()) {
+            throw new BadRequestException("annotation must not be blank");
+        }
+        if (description != null && description.isBlank()) {
+            throw new BadRequestException("description must not be blank");
+        }
+        if (participantLimit != null && participantLimit < 0) {
+            throw new BadRequestException("participantLimit must not be negative");
+        }
     }
 
     private void applyUpdate(Event event,
