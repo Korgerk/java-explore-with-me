@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.dto.category.CategoryDto;
 import ru.practicum.ewm.dto.category.NewCategoryDto;
 import ru.practicum.ewm.exception.ConflictException;
+import ru.practicum.ewm.exception.BadRequestException;
 import ru.practicum.ewm.exception.NotFoundException;
 import ru.practicum.ewm.mapper.CategoryMapper;
 import ru.practicum.ewm.model.Category;
@@ -39,9 +40,13 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional
     public CategoryDto createCategory(NewCategoryDto dto) {
+        if (dto.getName() == null || dto.getName().trim().isEmpty()) {
+            throw new BadRequestException("Category name must not be empty.");
+        }
         if (categoryRepository.findByNameIgnoreCase(dto.getName()).isPresent()) {
             throw new ConflictException("Category name already exists: " + dto.getName());
         }
+
         Category saved = categoryRepository.save(categoryMapper.toEntity(dto));
         return categoryMapper.toDto(saved);
     }
@@ -49,6 +54,10 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional
     public CategoryDto updateCategory(Long catId, NewCategoryDto dto) {
+        if (dto.getName() == null || dto.getName().trim().isEmpty()) {
+            throw new BadRequestException("Category name must not be empty.");
+        }
+
         Category category = categoryRepository.findById(catId)
                 .orElseThrow(() -> new NotFoundException("Category not found: " + catId));
 
