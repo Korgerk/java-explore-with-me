@@ -131,16 +131,31 @@ public class EventServiceImpl implements EventService {
         }
 
         List<Long> ids = events.stream().map(Event::getId).toList();
-        Map<Long, Long> views = statsFacade.getViewsByEventIds(ids);
         Map<Long, Long> confirmed = getConfirmedCounts(ids);
 
         return events.stream()
                 .map(e -> eventMapper.toFullDto(
                         e,
                         confirmed.getOrDefault(e.getId(), 0L),
-                        views.getOrDefault(e.getId(), 0L)
+                        0L
                 ))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public EventFullDto getUserEventById(Long userId, Long eventId) {
+        ensureUser(userId);
+
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new NotFoundException("Event not found: " + eventId));
+
+        if (!event.getInitiator().getId().equals(userId)) {
+            throw new NotFoundException("Event not found: " + eventId);
+        }
+
+        long confirmed = requestRepository.countByEventIdAndStatus(eventId, RequestStatus.CONFIRMED);
+
+        return eventMapper.toFullDto(event, confirmed, 0L);
     }
 
     @Override
@@ -195,9 +210,8 @@ public class EventServiceImpl implements EventService {
         Event saved = eventRepository.save(event);
 
         long confirmed = requestRepository.countByEventIdAndStatus(eventId, RequestStatus.CONFIRMED);
-        long views = statsFacade.getViewsByEventId(eventId);
 
-        return eventMapper.toFullDto(saved, confirmed, views);
+        return eventMapper.toFullDto(saved, confirmed, 0L);
     }
 
     @Override
@@ -229,14 +243,13 @@ public class EventServiceImpl implements EventService {
         }
 
         List<Long> ids = events.stream().map(Event::getId).toList();
-        Map<Long, Long> views = statsFacade.getViewsByEventIds(ids);
         Map<Long, Long> confirmed = getConfirmedCounts(ids);
 
         return events.stream()
                 .map(e -> eventMapper.toFullDto(
                         e,
                         confirmed.getOrDefault(e.getId(), 0L),
-                        views.getOrDefault(e.getId(), 0L)
+                        0L
                 ))
                 .collect(Collectors.toList());
     }
@@ -265,9 +278,8 @@ public class EventServiceImpl implements EventService {
         Event saved = eventRepository.save(event);
 
         long confirmed = requestRepository.countByEventIdAndStatus(eventId, RequestStatus.CONFIRMED);
-        long views = statsFacade.getViewsByEventId(eventId);
 
-        return eventMapper.toFullDto(saved, confirmed, views);
+        return eventMapper.toFullDto(saved, confirmed, 0L);
     }
 
     private void validateNewEvent(NewEventDto dto) {
@@ -354,6 +366,7 @@ public class EventServiceImpl implements EventService {
                 } catch (IllegalArgumentException ex) {
                     throw new ConflictException("Unknown stateAction: " + stateAction);
                 }
+
                 if (action == EventStateActionUser.SEND_TO_REVIEW) {
                     event.setState(EventState.PENDING);
                 } else if (action == EventStateActionUser.CANCEL_REVIEW) {
