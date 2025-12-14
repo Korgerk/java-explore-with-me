@@ -207,12 +207,15 @@ public class EventServiceImpl implements EventService {
             throw new NotFoundException("Event not found: " + eventId);
         }
 
+        if (dto.getEventDate() != null) {
+            validateEventDateForUser(dto.getEventDate());
+        }
+
         if (event.getState() == EventState.PUBLISHED) {
             throw new ConflictException("Only pending or canceled events can be changed");
         }
 
         if (dto.getEventDate() != null) {
-            validateEventDateForUser(dto.getEventDate());
             event.setEventDate(dto.getEventDate());
         }
         if (dto.getTitle() != null) {

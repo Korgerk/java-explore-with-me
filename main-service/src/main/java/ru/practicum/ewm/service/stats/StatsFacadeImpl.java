@@ -49,7 +49,7 @@ public class StatsFacadeImpl implements StatsFacade {
             LocalDateTime start = LocalDateTime.now().minusYears(10);
             LocalDateTime end = LocalDateTime.now().plusYears(1);
 
-            List<ViewStats> stats = statsClient.getStats(start, end, uris, false);
+            List<ViewStats> stats = statsClient.getStats(start, end, uris, true);
             if (stats != null) {
                 for (ViewStats dto : stats) {
                     if (dto.getUri() != null) {

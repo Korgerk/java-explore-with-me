@@ -28,4 +28,9 @@ public class PrivateUserRequestsController {
     ) {
         return requestService.createRequest(userId, eventId);
     }
+
+    @PatchMapping("/{requestId}/cancel")
+    public ParticipationRequestDto cancelRequest(@PathVariable Long userId, @PathVariable Long requestId) {
+        return requestService.cancelRequest(userId, requestId);
+    }
 }

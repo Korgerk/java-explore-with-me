@@ -203,4 +203,17 @@ public class RequestServiceImpl implements RequestService {
             throw new ConflictException("Unknown status: " + status);
         }
     }
+
+    @Override
+    @Transactional
+    public ParticipationRequestDto cancelRequest(Long userId, Long requestId) {
+        ensureUser(userId);
+
+        ParticipationRequest req = requestRepository.findByIdAndRequesterId(requestId, userId)
+                .orElseThrow(() -> new NotFoundException("Request not found: " + requestId));
+
+        req.setStatus(RequestStatus.CANCELED);
+        ParticipationRequest saved = requestRepository.save(req);
+        return requestMapper.toDto(saved);
+    }
 }
