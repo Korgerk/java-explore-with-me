@@ -207,6 +207,10 @@ public class EventServiceImpl implements EventService {
             throw new NotFoundException("Event not found: " + eventId);
         }
 
+        if (dto.getEventDate() != null && dto.getEventDate().isBefore(LocalDateTime.now())) {
+            throw new BadRequestException("Event date must not be in the past");
+        }
+
         if (dto.getEventDate() != null) {
             validateEventDateForUser(dto.getEventDate());
         }

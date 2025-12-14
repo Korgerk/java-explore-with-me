@@ -27,7 +27,7 @@ public class StatsFacadeImpl implements StatsFacade {
             EndpointHit hit = new EndpointHit();
             hit.setApp(Constants.APP_NAME);
             hit.setUri(request.getRequestURI());
-            hit.setIp(request.getRemoteAddr());
+            hit.setIp(extractIp(request));
             hit.setTimestamp(LocalDateTime.now());
             statsClient.hit(hit);
         } catch (Throwable ignored) {
@@ -83,5 +83,19 @@ public class StatsFacadeImpl implements StatsFacade {
     @Override
     public long getViewsByEventId(Long eventId) {
         return getViewsByEventIds(List.of(eventId)).getOrDefault(eventId, 0L);
+    }
+
+    private String extractIp(HttpServletRequest request) {
+        String xff = request.getHeader("X-Forwarded-For");
+        if (xff == null || xff.isBlank()) {
+            xff = request.getHeader("X-FORWARDED-FOR");
+        }
+        if (xff != null && !xff.isBlank()) {
+            String first = xff.split(",")[0].trim();
+            if (!first.isBlank()) {
+                return first;
+            }
+        }
+        return request.getRemoteAddr();
     }
 }
