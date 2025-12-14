@@ -117,7 +117,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<EventFullDto> getUserEvents(Long userId, int from, int size) {
+    public List<EventShortDto> getUserEvents(Long userId, int from, int size) {
         ensureUser(userId);
 
         List<Event> events = eventRepository.findByInitiatorId(
@@ -134,7 +134,7 @@ public class EventServiceImpl implements EventService {
         Map<Long, Long> confirmed = getConfirmedCounts(ids);
 
         return events.stream()
-                .map(e -> eventMapper.toFullDto(
+                .map(e -> eventMapper.toShortDto(
                         e,
                         confirmed.getOrDefault(e.getId(), 0L),
                         0L

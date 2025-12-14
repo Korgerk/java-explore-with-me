@@ -1,6 +1,5 @@
 package ru.practicum.ewm.controller.privateapi;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.dto.event.EventFullDto;
@@ -31,21 +30,15 @@ public class PrivateEventsController {
 
     @PostMapping
     public EventFullDto createEvent(@PathVariable Long userId,
-                                    @RequestBody @Valid NewEventDto dto) {
-        return eventService.createEvent(userId, dto);
-    }
-
-    @GetMapping("/{eventId}")
-    public EventFullDto getUserEventById(@PathVariable Long userId,
-                                         @PathVariable Long eventId) {
-        return eventService.getUserEventById(userId, eventId);
+                                    @RequestBody NewEventDto newEventDto) {
+        return eventService.createEvent(userId, newEventDto);
     }
 
     @PatchMapping("/{eventId}")
-    public EventFullDto updateEvent(@PathVariable Long userId,
-                                    @PathVariable Long eventId,
-                                    @RequestBody @Valid UpdateEventUserRequest dto) {
-        return eventService.updateUserEvent(userId, eventId, dto);
+    public EventFullDto updateUserEvent(@PathVariable Long userId,
+                                        @PathVariable Long eventId,
+                                        @RequestBody UpdateEventUserRequest request) {
+        return eventService.updateUserEvent(userId, eventId, request);
     }
 
     @GetMapping("/{eventId}/requests")
@@ -57,7 +50,7 @@ public class PrivateEventsController {
     @PatchMapping("/{eventId}/requests")
     public EventRequestStatusUpdateResult updateRequestStatuses(@PathVariable Long userId,
                                                                 @PathVariable Long eventId,
-                                                                @RequestBody @Valid EventRequestStatusUpdateRequest request) {
+                                                                @RequestBody EventRequestStatusUpdateRequest request) {
         return requestService.updateRequestStatuses(userId, eventId, request);
     }
 }
