@@ -9,56 +9,23 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.practicum.ewm.dto.error.ApiError;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
+import java.util.List;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ApiError> handleNotFound(NotFoundException ex) {
-        ApiError error = new ApiError(
-                Collections.emptyList(),
-                HttpStatus.NOT_FOUND.name(),
-                "The required object was not found.",
-                ex.getMessage(),
-                LocalDateTime.now()
-        );
-        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    @ExceptionHandler({MethodArgumentNotValidException.class, ConstraintViolationException.class, BadRequestException.class})
+    public ResponseEntity<ApiError> handleBadRequest(Exception ex) {
+        return new ResponseEntity<>(new ApiError(List.of(ex.getMessage()), "Incorrectly made request.", ex.getMessage(), HttpStatus.BAD_REQUEST.name(), LocalDateTime.now()), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(ConflictException.class)
     public ResponseEntity<ApiError> handleConflict(ConflictException ex) {
-        ApiError error = new ApiError(
-                Collections.emptyList(),
-                HttpStatus.CONFLICT.name(),
-                "For the requested operation the conditions are not met.",
-                ex.getMessage(),
-                LocalDateTime.now()
-        );
-        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+        return new ResponseEntity<>(new ApiError(List.of(ex.getMessage()), "For the requested operation the conditions are not met.", ex.getMessage(), HttpStatus.CONFLICT.name(), LocalDateTime.now()), HttpStatus.CONFLICT);
     }
 
-    @ExceptionHandler({BadRequestException.class, MethodArgumentNotValidException.class, ConstraintViolationException.class})
-    public ResponseEntity<ApiError> handleBadRequest(Exception ex) {
-        ApiError error = new ApiError(
-                Collections.emptyList(),
-                HttpStatus.BAD_REQUEST.name(),
-                "Incorrectly made request.",
-                ex.getMessage(),
-                LocalDateTime.now()
-        );
-        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(Throwable.class)
-    public ResponseEntity<ApiError> handleOther(Throwable ex) {
-        ApiError error = new ApiError(
-                Collections.emptyList(),
-                HttpStatus.INTERNAL_SERVER_ERROR.name(),
-                "Unexpected error.",
-                ex.getMessage(),
-                LocalDateTime.now()
-        );
-        return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<ApiError> handleNotFound(NotFoundException ex) {
+        return new ResponseEntity<>(new ApiError(List.of(ex.getMessage()), "The required object was not found.", ex.getMessage(), HttpStatus.NOT_FOUND.name(), LocalDateTime.now()), HttpStatus.NOT_FOUND);
     }
 }
