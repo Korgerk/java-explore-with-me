@@ -1,5 +1,6 @@
 package ru.practicum.ewm.dto.event;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -23,6 +24,7 @@ public class NewEventDto {
 
     @NotNull
     @Future
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime eventDate;
 
     private boolean paid;
