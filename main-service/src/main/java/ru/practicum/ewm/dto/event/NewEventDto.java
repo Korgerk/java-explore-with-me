@@ -1,19 +1,18 @@
 package ru.practicum.ewm.dto.event;
 
-import jakarta.validation.constraints.Future;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
 
+@Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 public class NewEventDto {
 
     @NotBlank
@@ -32,14 +31,14 @@ public class NewEventDto {
     Long category;
 
     @NotNull
-    @Future
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime eventDate;
 
+    Boolean paid;
+    Integer participantLimit;
+    Boolean requestModeration;
+
+    @NotNull
+    @Valid
     LocationDto location;
-
-    Boolean paid = false;
-
-    Integer participantLimit = 0;
-
-    Boolean requestModeration = true;
 }

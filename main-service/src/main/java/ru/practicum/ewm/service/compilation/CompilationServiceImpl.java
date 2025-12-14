@@ -56,7 +56,7 @@ public class CompilationServiceImpl implements CompilationService {
 
         Compilation comp = new Compilation();
         comp.setTitle(dto.getTitle());
-        comp.setPinned(dto.isPinned());
+        comp.setPinned(dto.getPinned() != null && dto.getPinned());
 
         if (dto.getEvents() != null && !dto.getEvents().isEmpty()) {
             List<Event> events = eventRepository.findAllById(dto.getEvents());

@@ -13,6 +13,14 @@ import ru.practicum.ewm.model.User;
 @Component
 public class EventMapper {
 
+    private final CategoryMapper categoryMapper;
+    private final UserMapper userMapper;
+
+    public EventMapper(CategoryMapper categoryMapper, UserMapper userMapper) {
+        this.categoryMapper = categoryMapper;
+        this.userMapper = userMapper;
+    }
+
     public Event toEntity(NewEventDto dto, User initiator, Category category) {
         if (dto == null) {
             return null;
@@ -25,15 +33,18 @@ public class EventMapper {
         event.setInitiator(initiator);
         event.setCategory(category);
         event.setEventDate(dto.getEventDate());
-        event.setPaid(Boolean.TRUE.equals(dto.getPaid()));
-        event.setParticipantLimit(dto.getParticipantLimit());
-        event.setRequestModeration(dto.getRequestModeration() == null || dto.getRequestModeration());
+
+        boolean paid = dto.getPaid() != null && dto.getPaid();
+        int participantLimit = dto.getParticipantLimit() == null ? 0 : dto.getParticipantLimit();
+        boolean requestModeration = dto.getRequestModeration() == null || dto.getRequestModeration();
+
+        event.setPaid(paid);
+        event.setParticipantLimit(participantLimit);
+        event.setRequestModeration(requestModeration);
 
         Location location = new Location();
-        if (dto.getLocation() != null) {
-            location.setLat(dto.getLocation().getLat());
-            location.setLon(dto.getLocation().getLon());
-        }
+        location.setLat(dto.getLocation().getLat());
+        location.setLon(dto.getLocation().getLon());
         event.setLocation(location);
 
         return event;
@@ -43,18 +54,14 @@ public class EventMapper {
         if (event == null) {
             return null;
         }
-
-        Long categoryId = event.getCategory() == null ? null : event.getCategory().getId();
-        Long initiatorId = event.getInitiator() == null ? null : event.getInitiator().getId();
-
         return new EventShortDto(
                 event.getId(),
                 event.getTitle(),
                 event.getAnnotation(),
-                categoryId,
-                initiatorId,
-                event.isPaid(),
+                categoryMapper.toDto(event.getCategory()),
+                userMapper.toDto(event.getInitiator()),
                 event.getEventDate(),
+                event.isPaid(),
                 confirmedRequests,
                 views
         );
@@ -65,15 +72,11 @@ public class EventMapper {
             return null;
         }
 
-        Long categoryId = event.getCategory() == null ? null : event.getCategory().getId();
-        Long initiatorId = event.getInitiator() == null ? null : event.getInitiator().getId();
-
         LocationDto locationDto = null;
         if (event.getLocation() != null) {
-            locationDto = new LocationDto(
-                    event.getLocation().getLat(),
-                    event.getLocation().getLon()
-            );
+            locationDto = new LocationDto();
+            locationDto.setLat(event.getLocation().getLat());
+            locationDto.setLon(event.getLocation().getLon());
         }
 
         String state = event.getState() == null ? null : event.getState().name();
@@ -82,19 +85,19 @@ public class EventMapper {
                 event.getId(),
                 event.getTitle(),
                 event.getAnnotation(),
-                event.getDescription(),
-                categoryId,
-                initiatorId,
+                categoryMapper.toDto(event.getCategory()),
                 event.isPaid(),
-                event.getParticipantLimit(),
-                event.isRequestModeration(),
                 event.getEventDate(),
+                userMapper.toDto(event.getInitiator()),
+                event.getDescription(),
+                event.getParticipantLimit(),
+                state,
                 event.getCreatedOn(),
                 event.getPublishedOn(),
-                state,
-                confirmedRequests,
+                locationDto,
+                event.isRequestModeration(),
                 views,
-                locationDto
+                confirmedRequests
         );
     }
 }

@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.dto.event.EventFullDto;
 import ru.practicum.ewm.dto.event.EventShortDto;
@@ -24,7 +25,9 @@ public class PublicEventsController {
             @RequestParam(required = false) String text,
             @RequestParam(required = false) List<Long> categories,
             @RequestParam(required = false) Boolean paid,
+            @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
             @RequestParam(required = false) LocalDateTime rangeStart,
+            @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
             @RequestParam(required = false) LocalDateTime rangeEnd,
             @RequestParam(defaultValue = "false") boolean onlyAvailable,
             @RequestParam(required = false) String sort,
