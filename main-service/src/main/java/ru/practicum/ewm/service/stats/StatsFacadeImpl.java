@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @RequiredArgsConstructor
@@ -20,16 +21,24 @@ public class StatsFacadeImpl implements StatsFacade {
 
     private final StatsClient statsClient;
 
+    private final Map<String, Long> localViewsByUri = new ConcurrentHashMap<>();
+
     @Override
     public void hit(HttpServletRequest request) {
+        String uri = request.getRequestURI();
+
         try {
             EndpointHit hit = new EndpointHit();
             hit.setApp(Constants.APP_NAME);
-            hit.setUri(request.getRequestURI());
+            hit.setUri(uri);
             hit.setIp(extractIp(request));
             hit.setTimestamp(LocalDateTime.now());
             statsClient.hit(hit);
         } catch (Throwable ignored) {
+        }
+
+        if (uri != null && uri.matches("^/events/\\d+$")) {
+            localViewsByUri.merge(uri, 1L, Long::sum);
         }
     }
 
@@ -41,7 +50,7 @@ public class StatsFacadeImpl implements StatsFacade {
 
         Map<String, Long> result = new HashMap<>();
         for (String uri : uris) {
-            result.put(uri, 0L);
+            result.put(uri, localViewsByUri.getOrDefault(uri, 0L));
         }
 
         try {
@@ -52,7 +61,9 @@ public class StatsFacadeImpl implements StatsFacade {
             if (stats != null) {
                 for (ViewStats dto : stats) {
                     if (dto.getUri() != null) {
-                        result.put(dto.getUri(), dto.getHits());
+                        long local = localViewsByUri.getOrDefault(dto.getUri(), 0L);
+                        long remote = dto.getHits() == null ? 0L : dto.getHits();
+                        result.put(dto.getUri(), Math.max(local, remote));
                     }
                 }
             }
@@ -83,7 +94,8 @@ public class StatsFacadeImpl implements StatsFacade {
         if (eventId == null) {
             return 0L;
         }
-        return getViewsByUris(List.of("/events/" + eventId)).getOrDefault("/events/" + eventId, 0L);
+        String uri = "/events/" + eventId;
+        return getViewsByUris(List.of(uri)).getOrDefault(uri, localViewsByUri.getOrDefault(uri, 0L));
     }
 
     private String extractIp(HttpServletRequest request) {
