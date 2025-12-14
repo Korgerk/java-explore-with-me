@@ -15,16 +15,13 @@ public class AdminCategoriesController {
     private final CategoryService categoryService;
 
     @PostMapping
-    public CategoryDto createCategory(@RequestBody @Valid NewCategoryDto dto) {
-        return categoryService.createCategory(dto);
+    public CategoryDto createCategory(@Valid @RequestBody NewCategoryDto newCategoryDto) {
+        return categoryService.createCategory(newCategoryDto);
     }
 
     @PatchMapping("/{catId}")
-    public CategoryDto updateCategory(
-            @PathVariable Long catId,
-            @RequestBody @Valid NewCategoryDto dto
-    ) {
-        return categoryService.updateCategory(catId, dto);
+    public CategoryDto updateCategory(@PathVariable Long catId, @Valid @RequestBody NewCategoryDto newCategoryDto) {
+        return categoryService.updateCategory(catId, newCategoryDto);
     }
 
     @DeleteMapping("/{catId}")
