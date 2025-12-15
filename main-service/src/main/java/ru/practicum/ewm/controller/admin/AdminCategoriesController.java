@@ -13,10 +13,12 @@ import ru.practicum.ewm.service.category.CategoryService;
 
 import java.util.List;
 
+import static ru.practicum.ewm.util.ApiPaths.*;
+
 @Validated
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/admin/categories")
+@RequestMapping(ADMIN_CATEGORIES)
 public class AdminCategoriesController {
 
     private final CategoryService categoryService;
@@ -27,12 +29,12 @@ public class AdminCategoriesController {
         return categoryService.createCategory(dto);
     }
 
-    @PatchMapping("/{catId}")
+    @PatchMapping(CAT_ID)
     public CategoryDto updateCategory(@PathVariable Long catId, @RequestBody @Valid NewCategoryDto dto) {
         return categoryService.updateCategory(catId, dto);
     }
 
-    @DeleteMapping("/{catId}")
+    @DeleteMapping(CAT_ID)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCategory(@PathVariable Long catId) {
         categoryService.deleteCategory(catId);

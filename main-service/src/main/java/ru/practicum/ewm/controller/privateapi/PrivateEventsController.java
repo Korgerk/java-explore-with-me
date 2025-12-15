@@ -14,8 +14,10 @@ import ru.practicum.ewm.service.event.EventService;
 
 import java.util.List;
 
+import static ru.practicum.ewm.util.ApiPaths.*;
+
 @RestController
-@RequestMapping("/users/{userId}/events")
+@RequestMapping(PRIVATE_USER_EVENTS)
 @RequiredArgsConstructor
 @Validated
 public class PrivateEventsController {
@@ -29,7 +31,7 @@ public class PrivateEventsController {
         return eventService.getUserEvents(userId, from, size);
     }
 
-    @GetMapping("/{eventId}")
+    @GetMapping(EVENT_ID)
     public EventFullDto getUserEventById(@PathVariable Long userId,
                                          @PathVariable Long eventId) {
         return eventService.getUserEventById(userId, eventId);
@@ -42,7 +44,7 @@ public class PrivateEventsController {
         return eventService.createEvent(userId, dto);
     }
 
-    @PatchMapping("/{eventId}")
+    @PatchMapping(EVENT_ID)
     public EventFullDto updateEvent(@PathVariable Long userId,
                                     @PathVariable Long eventId,
                                     @RequestBody @Valid UpdateEventUserRequest dto) {

@@ -1,8 +1,10 @@
 package ru.practicum.ewm.model;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -11,17 +13,18 @@ import java.util.Set;
 @Setter
 @Entity
 @Table(name = "compilations")
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Compilation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    Long id;
 
     @Column(nullable = false, length = 50)
-    private String title;
+    String title;
 
     @Column(nullable = false)
-    private boolean pinned;
+    boolean pinned;
 
     @ManyToMany
     @JoinTable(
@@ -29,5 +32,5 @@ public class Compilation {
             joinColumns = @JoinColumn(name = "compilation_id"),
             inverseJoinColumns = @JoinColumn(name = "event_id")
     )
-    private Set<Event> events = new HashSet<>();
+    Set<Event> events = new HashSet<>();
 }

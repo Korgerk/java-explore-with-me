@@ -8,8 +8,10 @@ import ru.practicum.ewm.service.request.RequestService;
 
 import java.util.List;
 
+import static ru.practicum.ewm.util.ApiPaths.*;
+
 @RestController
-@RequestMapping("/users/{userId}/requests")
+@RequestMapping(PRIVATE_USER_REQUESTS)
 @RequiredArgsConstructor
 public class PrivateUserRequestsController {
 
@@ -29,7 +31,7 @@ public class PrivateUserRequestsController {
         return requestService.createRequest(userId, eventId);
     }
 
-    @PatchMapping("/{requestId}/cancel")
+    @PatchMapping(REQUEST_ID + CANCEL)
     public ParticipationRequestDto cancelRequest(@PathVariable Long userId, @PathVariable Long requestId) {
         return requestService.cancelRequest(userId, requestId);
     }

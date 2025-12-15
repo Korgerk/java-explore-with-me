@@ -1,14 +1,17 @@
 package ru.practicum.ewm.model;
 
 import jakarta.persistence.Embeddable;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 
 @Getter
 @Setter
 @Embeddable
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Location {
 
-    private Double lat;
-    private Double lon;
+    Double lat;
+    Double lon;
 }

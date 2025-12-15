@@ -1,8 +1,10 @@
 package ru.practicum.ewm.model;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 
 @Getter
 @Setter
@@ -10,15 +12,16 @@ import lombok.Setter;
 @Table(name = "users", uniqueConstraints = {
         @UniqueConstraint(name = "uq_user_email", columnNames = {"email"})
 })
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    Long id;
 
     @Column(nullable = false)
-    private String name;
+    String name;
 
     @Column(nullable = false)
-    private String email;
+    String email;
 }

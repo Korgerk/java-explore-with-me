@@ -10,8 +10,10 @@ import ru.practicum.ewm.service.request.RequestService;
 
 import java.util.List;
 
+import static ru.practicum.ewm.util.ApiPaths.*;
+
 @RestController
-@RequestMapping("/users/{userId}/events/{eventId}/requests")
+@RequestMapping(PRIVATE_EVENT_REQUESTS)
 @RequiredArgsConstructor
 public class PrivateEventRequestsController {
 

@@ -1,8 +1,10 @@
 package ru.practicum.ewm.model;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 import ru.practicum.ewm.model.enums.EventState;
 
 import java.time.LocalDateTime;
@@ -11,51 +13,52 @@ import java.time.LocalDateTime;
 @Setter
 @Entity
 @Table(name = "events")
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Event {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    Long id;
 
     @Column(nullable = false, length = 120)
-    private String title;
+    String title;
 
     @Column(nullable = false, length = 2000)
-    private String annotation;
+    String annotation;
 
     @Column(nullable = false, length = 7000)
-    private String description;
+    String description;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)
-    private Category category;
+    Category category;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "initiator_id", nullable = false)
-    private User initiator;
+    User initiator;
 
     @Column(name = "event_date", nullable = false)
-    private LocalDateTime eventDate;
+    LocalDateTime eventDate;
 
     @Column(nullable = false)
-    private boolean paid;
+    boolean paid;
 
     @Column(name = "participant_limit", nullable = false)
-    private int participantLimit;
+    int participantLimit;
 
     @Column(name = "request_moderation", nullable = false)
-    private boolean requestModeration = true;
+    boolean requestModeration = true;
 
     @Embedded
-    private Location location;
+    Location location;
 
     @Column(name = "created_on", nullable = false)
-    private LocalDateTime createdOn;
+    LocalDateTime createdOn;
 
     @Column(name = "published_on")
-    private LocalDateTime publishedOn;
+    LocalDateTime publishedOn;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private EventState state;
+    EventState state;
 }

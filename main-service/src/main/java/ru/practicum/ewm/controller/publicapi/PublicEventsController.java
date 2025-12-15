@@ -14,9 +14,11 @@ import ru.practicum.ewm.service.event.EventService;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static ru.practicum.ewm.util.ApiPaths.*;
+
 @Validated
 @RestController
-@RequestMapping("/events")
+@RequestMapping(PUBLIC_EVENTS)
 @RequiredArgsConstructor
 public class PublicEventsController {
 
@@ -40,7 +42,7 @@ public class PublicEventsController {
         return eventService.getPublicEvents(text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size, request);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping(ID)
     public EventFullDto getEventById(
             @PathVariable Long id,
             HttpServletRequest request

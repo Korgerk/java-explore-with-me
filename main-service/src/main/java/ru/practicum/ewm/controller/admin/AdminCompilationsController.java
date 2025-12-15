@@ -9,9 +9,11 @@ import ru.practicum.ewm.dto.compilation.NewCompilationDto;
 import ru.practicum.ewm.dto.compilation.UpdateCompilationRequest;
 import ru.practicum.ewm.service.compilation.CompilationService;
 
+import static ru.practicum.ewm.util.ApiPaths.*;
+
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/admin/compilations")
+@RequestMapping(ADMIN_COMPILATIONS)
 public class AdminCompilationsController {
 
     private final CompilationService compilationService;
@@ -22,12 +24,12 @@ public class AdminCompilationsController {
         return compilationService.createCompilation(dto);
     }
 
-    @PatchMapping("/{compId}")
+    @PatchMapping(COMP_ID)
     public CompilationDto update(@PathVariable Long compId, @RequestBody @Valid UpdateCompilationRequest dto) {
         return compilationService.updateCompilation(compId, dto);
     }
 
-    @DeleteMapping("/{compId}")
+    @DeleteMapping(COMP_ID)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long compId) {
         compilationService.deleteCompilation(compId);

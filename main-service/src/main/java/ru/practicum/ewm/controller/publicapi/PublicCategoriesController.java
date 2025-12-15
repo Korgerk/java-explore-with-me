@@ -10,9 +10,11 @@ import ru.practicum.ewm.service.category.CategoryService;
 
 import java.util.List;
 
+import static ru.practicum.ewm.util.ApiPaths.*;
+
 @Validated
 @RestController
-@RequestMapping("/categories")
+@RequestMapping(PUBLIC_CATEGORIES)
 @RequiredArgsConstructor
 public class PublicCategoriesController {
 
@@ -26,7 +28,7 @@ public class PublicCategoriesController {
         return categoryService.getCategories(from, size);
     }
 
-    @GetMapping("/{catId}")
+    @GetMapping(CAT_ID)
     public CategoryDto getCategory(@PathVariable Long catId) {
         return categoryService.getCategoryById(catId);
     }

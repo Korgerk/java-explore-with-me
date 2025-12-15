@@ -13,10 +13,12 @@ import ru.practicum.ewm.service.user.UserService;
 
 import java.util.List;
 
+import static ru.practicum.ewm.util.ApiPaths.*;
+
 @Validated
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/admin/users")
+@RequestMapping(ADMIN_USERS)
 public class AdminUsersController {
 
     private final UserService userService;
@@ -34,7 +36,7 @@ public class AdminUsersController {
         return userService.createUser(request);
     }
 
-    @DeleteMapping("/{userId}")
+    @DeleteMapping(USER_ID)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteUser(@PathVariable Long userId) {
         userService.deleteUser(userId);

@@ -1,8 +1,10 @@
 package ru.practicum.ewm.model;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 import ru.practicum.ewm.model.enums.RequestStatus;
 
 import java.time.LocalDateTime;
@@ -16,24 +18,25 @@ import java.time.LocalDateTime;
                 columnNames = {"event_id", "requester_id"}
         )
 })
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class ParticipationRequest {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    Long id;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id", nullable = false)
-    private Event event;
+    Event event;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "requester_id", nullable = false)
-    private User requester;
+    User requester;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private RequestStatus status;
+    RequestStatus status;
 
     @Column(nullable = false)
-    private LocalDateTime created;
+    LocalDateTime created;
 }

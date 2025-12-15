@@ -10,9 +10,11 @@ import ru.practicum.ewm.service.compilation.CompilationService;
 
 import java.util.List;
 
+import static ru.practicum.ewm.util.ApiPaths.*;
+
 @Validated
 @RestController
-@RequestMapping("/compilations")
+@RequestMapping(PUBLIC_COMPILATIONS)
 @RequiredArgsConstructor
 public class PublicCompilationsController {
 
@@ -27,7 +29,7 @@ public class PublicCompilationsController {
         return compilationService.getCompilations(pinned, from, size);
     }
 
-    @GetMapping("/{compId}")
+    @GetMapping(COMP_ID)
     public CompilationDto getCompilation(@PathVariable Long compId) {
         return compilationService.getCompilationById(compId);
     }

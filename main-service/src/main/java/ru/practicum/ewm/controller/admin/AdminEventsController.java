@@ -14,9 +14,11 @@ import ru.practicum.ewm.service.event.EventService;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static ru.practicum.ewm.util.ApiPaths.*;
+
 @Validated
 @RestController
-@RequestMapping("/admin/events")
+@RequestMapping(ADMIN_EVENTS)
 @RequiredArgsConstructor
 public class AdminEventsController {
 
@@ -37,7 +39,7 @@ public class AdminEventsController {
         return eventService.getAdminEvents(users, states, categories, rangeStart, rangeEnd, from, size);
     }
 
-    @PatchMapping("/{eventId}")
+    @PatchMapping(EVENT_ID)
     public EventFullDto updateEvent(
             @PathVariable Long eventId,
             @RequestBody @Valid UpdateEventAdminRequest dto
