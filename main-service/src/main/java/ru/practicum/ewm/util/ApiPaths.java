@@ -11,6 +11,8 @@ public final class ApiPaths {
     public static final String CATEGORIES = "/categories";
     public static final String COMPILATIONS = "/compilations";
     public static final String REQUESTS = "/requests";
+    public static final String SUMMARY = "/summary";
+    public static final String RATINGS = "/rating";
 
     public static final String USER_ID = "/{userId}";
     public static final String EVENT_ID = "/{eventId}";
@@ -29,6 +31,8 @@ public final class ApiPaths {
     public static final String PRIVATE_USER_EVENTS = USERS + USER_ID + EVENTS;
     public static final String PRIVATE_USER_REQUESTS = USERS + USER_ID + REQUESTS;
     public static final String PRIVATE_EVENT_REQUESTS = USERS + USER_ID + EVENTS + EVENT_ID + REQUESTS;
+
+    public static final String PRIVATE_EVENT_RATINGS = USERS + USER_ID + EVENTS + EVENT_ID + RATINGS;
 
     public static final String PUBLIC_EVENTS = EVENTS;
     public static final String PUBLIC_CATEGORIES = CATEGORIES;
