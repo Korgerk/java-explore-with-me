@@ -1,0 +1,200 @@
+{
+  "info": {
+    "_postman_id": "c7c4cdb6-6a62-4b4c-a1e6-222222222222",
+    "name": "feature-rating_events",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080" },
+    { "key": "userId_initiator", "value": "" },
+    { "key": "userId_rater", "value": "" },
+    { "key": "categoryId", "value": "" },
+    { "key": "eventId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Admin - create initiator user",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{baseUrl}}/admin/users",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Initiator\",\n  \"email\": \"initiator_{{$timestamp}}@mail.com\"\n}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const j = pm.response.json();",
+              "if (j && j.id) pm.collectionVariables.set('userId_initiator', j.id);",
+              "pm.test('Status 201', function () { pm.response.to.have.status(201); });",
+              "pm.test('Has id', function () { pm.expect(j).to.have.property('id'); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin - create rater user",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{baseUrl}}/admin/users",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Rater\",\n  \"email\": \"rater_{{$timestamp}}@mail.com\"\n}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const j = pm.response.json();",
+              "if (j && j.id) pm.collectionVariables.set('userId_rater', j.id);",
+              "pm.test('Status 201', function () { pm.response.to.have.status(201); });",
+              "pm.test('Has id', function () { pm.expect(j).to.have.property('id'); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin - create category",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{baseUrl}}/admin/categories",
+        "body": {
+          "mode": "raw",
+          "raw": "{ \"name\": \"Category_{{$timestamp}}\" }"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const j = pm.response.json();",
+              "if (j && j.id) pm.collectionVariables.set('categoryId', j.id);",
+              "pm.test('Status 201', function () { pm.response.to.have.status(201); });",
+              "pm.test('Has id', function () { pm.expect(j).to.have.property('id'); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "User - create event",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{baseUrl}}/users/{{userId_initiator}}/events",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Event_{{$timestamp}}\",\n  \"annotation\": \"Annotation for rating tests 1234567890\",\n  \"description\": \"Description for rating tests 1234567890 1234567890\",\n  \"category\": {{categoryId}},\n  \"paid\": false,\n  \"eventDate\": \"2035-05-05 10:00:00\",\n  \"location\": { \"lat\": 10.0, \"lon\": 10.0 },\n  \"participantLimit\": 0,\n  \"requestModeration\": false\n}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const j = pm.response.json();",
+              "if (j && j.id) pm.collectionVariables.set('eventId', j.id);",
+              "pm.test('Status 201', function () { pm.response.to.have.status(201); });",
+              "pm.test('Has id', function () { pm.expect(j).to.have.property('id'); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin - publish event",
+      "request": {
+        "method": "PATCH",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{baseUrl}}/admin/events/{{eventId}}",
+        "body": {
+          "mode": "raw",
+          "raw": "{ \"stateAction\": \"PUBLISH_EVENT\" }"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 200', function () { pm.response.to.have.status(200); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Rate event LIKE",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{baseUrl}}/users/{{userId_rater}}/events/{{eventId}}/rating",
+        "body": {
+          "mode": "raw",
+          "raw": "{ \"value\": \"LIKE\" }"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 201', function () { pm.response.to.have.status(201); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Get rating summary",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/users/{{userId_rater}}/events/{{eventId}}/rating/summary"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+              "const j = pm.response.json();",
+              "pm.test('Has likes/dislikes/score', function () {",
+              "  pm.expect(j).to.have.property('likes');",
+              "  pm.expect(j).to.have.property('dislikes');",
+              "  pm.expect(j).to.have.property('score');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Delete rating",
+      "request": {
+        "method": "DELETE",
+        "url": "{{baseUrl}}/users/{{userId_rater}}/events/{{eventId}}/rating"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 204', function () { pm.response.to.have.status(204); });"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
