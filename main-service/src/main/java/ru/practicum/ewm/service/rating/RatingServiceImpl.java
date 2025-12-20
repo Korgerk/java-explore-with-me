@@ -27,17 +27,17 @@ public class RatingServiceImpl implements RatingService {
     @Override
     public void rateEvent(Long userId, Long eventId, RatingRequestDto dto) {
         var user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("User not found"));
+                .orElseThrow(() -> new NotFoundException("User not found: id=" + userId));
 
         Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new NotFoundException("Event not found"));
+                .orElseThrow(() -> new NotFoundException("Event not found: id=" + eventId));
 
         if (event.getState() != EventState.PUBLISHED) {
-            throw new ConflictException("Event is not published");
+            throw new ConflictException("Event " + eventId + " is not published");
         }
 
         if (event.getInitiator().getId().equals(userId)) {
-            throw new ConflictException("Cannot rate own event");
+            throw new ConflictException("User " + userId + " cannot rate own event " + eventId);
         }
 
         EventRating rating = ratingRepository
@@ -52,7 +52,7 @@ public class RatingServiceImpl implements RatingService {
     public void deleteRating(Long userId, Long eventId) {
         EventRating rating = ratingRepository
                 .findByEventIdAndUserId(eventId, userId)
-                .orElseThrow(() -> new NotFoundException("Rating not found"));
+                .orElseThrow(() -> new NotFoundException("Rating not found for eventId=" + eventId + ", userId=" + userId));
 
         ratingRepository.delete(rating);
     }
